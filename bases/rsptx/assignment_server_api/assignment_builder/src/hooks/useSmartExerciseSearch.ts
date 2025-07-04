@@ -116,6 +116,15 @@ export const useSmartExerciseSearch = (initialParams?: Partial<ExercisesSearchRe
     }));
   }, []);
 
+  // Function to toggle base course filter
+  const toggleBaseCourse = useCallback((useBaseCourse: boolean) => {
+    setSearchParams((prevParams) => ({
+      ...prevParams,
+      use_base_course: useBaseCourse,
+      page: 0 // Reset to first page when filter changes
+    }));
+  }, []);
+
   // Combine loading states for better UX
   const loading = isLoading || isFetching;
 
@@ -177,6 +186,7 @@ export const useSmartExerciseSearch = (initialParams?: Partial<ExercisesSearchRe
     onPage,
     onSort,
     onFilter,
+    toggleBaseCourse,
 
     // Raw action to refetch data
     refetch

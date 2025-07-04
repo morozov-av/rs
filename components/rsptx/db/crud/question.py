@@ -182,6 +182,10 @@ async def search_exercises(
     # Base query
     query = select(Question).where(Question.question_type != "page")
 
+    # If base_course is provided, filter by base_course
+    if criteria.base_course:
+        query = query.where(Question.base_course == criteria.base_course)
+
     # If assignment_id is provided, exclude already attached exercises
     if criteria.assignment_id is not None:
         assigned_questions = (
@@ -538,6 +542,7 @@ async def update_question(question: QuestionValidator) -> QuestionValidator:
         await session.execute(stmt)
     return question
 
+
 async def fetch_questions_for_chapter_subchapter(
     base_course: str,
     skipreading: bool = False,
@@ -673,6 +678,7 @@ async def fetch_questions_for_chapter_subchapter(
 
         return chaps
 
+
 async def validate_question_name_unique(name: str, base_course: str) -> bool:
     """
     Check if a question name is unique within a base course.
@@ -689,6 +695,7 @@ async def validate_question_name_unique(name: str, base_course: str) -> bool:
         res = await session.execute(query)
         existing_question = res.scalars().first()
         return existing_question is None
+
 
 async def copy_question(
     original_question_id: int, 

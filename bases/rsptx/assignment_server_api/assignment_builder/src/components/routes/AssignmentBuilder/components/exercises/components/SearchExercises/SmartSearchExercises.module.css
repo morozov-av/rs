@@ -622,4 +622,24 @@
   border-radius: 0.625rem;
   background-color: var(--primary-color);
   color: var(--primary-color-text);
-} 
+}
+
+.baseCourseFilter {
+  flex: 0 0 auto;
+  min-width: 9rem;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-color);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.checkboxLabel span {
+  font-weight: 500;
+  user-select: none;
+}
