@@ -34,6 +34,7 @@ from typing import Dict, Type, TypeAlias
 # -------------------
 from pydantic import field_validator
 from sqlalchemy import (
+    Boolean,
     Column,
     ForeignKey,
     Index,
@@ -431,7 +432,25 @@ class SourceCode(Base, IdMixin):
     filename = Column(String(512))
 
 
-SourceCodeValidator: TypeAlias = sqlalchemy_to_pydantic(SourceCode)  # type: ignore
+SourceCodeValidator: TypeAlias = sqlalchemy_to_pydantic(SourceCode)
+
+
+# Table for storing DataFile metadata (display settings)
+class DataFileMetadata(Base, IdMixin):
+    __tablename__ = "datafile_metadata"
+
+    # Reference to the source_code entry
+    source_code_id = Column(Integer, ForeignKey("source_code.id"), nullable=False, index=True)
+    # Display settings
+    is_editable = Column(Boolean, default=False, nullable=False)
+    rows = Column(Integer, default=10, nullable=False)
+    cols = Column(Integer, default=50, nullable=False)
+
+    # Relationship
+    source_code = relationship("SourceCode", backref="metadata")
+
+
+DataFileMetadataValidator: TypeAlias = sqlalchemy_to_pydantic(DataFileMetadata)  # type: ignore
 
 
 # Courses

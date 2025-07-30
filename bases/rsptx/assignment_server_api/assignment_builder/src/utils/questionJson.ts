@@ -2,14 +2,14 @@ import { TableDropdownOption } from "@/types/dataset";
 import { CreateExerciseFormType, QuestionJSON } from "@/types/exercises";
 
 export const buildQuestionJson = (data: CreateExerciseFormType) => {
-  // Create the question JSON object based on question type
   const questionObject = {
     ...(data.question_type === "activecode" && {
       prefix_code: data.prefix_code,
       starter_code: data.starter_code,
       suffix_code: data.suffix_code,
       instructions: data.instructions,
-      language: data.language
+      language: data.language,
+      ...(data.datafile && { datafile: data.datafile })
     }),
     ...(data.question_type === "shortanswer" && {
       attachment: data.attachment,

@@ -83,8 +83,8 @@ const stepConfigs: Record<string, ExerciseStepConfig> = {
   },
   activecode: {
     0: {
-      title: "Select Language",
-      description: "Choose the programming language for this active code exercise"
+      title: "Language & DataFile",
+      description: "Choose the programming language and select data files for this exercise"
     },
     1: {
       title: "Write Instructions",
@@ -344,7 +344,7 @@ export const SHORT_ANSWER_STEP_VALIDATORS: StepValidator<Partial<CreateExerciseF
 
 // ActiveCode Exercise Step Validators
 export const ACTIVE_CODE_STEP_VALIDATORS: StepValidator<Partial<CreateExerciseFormType>>[] = [
-  // Language
+  // Language & DataFile
   (data) => {
     const errors: string[] = [];
 

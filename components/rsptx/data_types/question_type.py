@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class QuestionType(Enum):
     ACTIVECODE = ("activecode", "Active Code", "Create an interactive coding exercise with real-time execution")
     MCHOICE = ("mchoice", "Multiple Choice", "Create a multiple choice question with single or multiple correct answers")

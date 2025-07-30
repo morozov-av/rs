@@ -1,4 +1,5 @@
 import { ExerciseComponentProps } from "@components/routes/AssignmentBuilder/components/exercises/components/CreateExercise/types/ExerciseTypes";
+import { useGetDataFilesQuery, DataFileListItem } from "@store/datafile/datafile.logic.api";
 import { FC } from "react";
 
 import { CreateExerciseFormType } from "@/types/exercises";
@@ -14,6 +15,7 @@ import { validateCommonFields } from "../../utils/validation";
 
 import { ActiveCodeExerciseSettings } from "./ActiveCodeExerciseSettings";
 import { ActiveCodePreview } from "./ActiveCodePreview";
+import { DataFileSelector } from "./components/DataFileSelector";
 import { InstructionsEditor } from "./components/InstructionsEditor";
 import { LanguageSelector } from "./components/LanguageSelector";
 import { PrefixCodeEditor } from "./components/PrefixCodeEditor";
@@ -22,7 +24,7 @@ import { SuffixCodeEditor } from "./components/SuffixCodeEditor";
 
 // Define the steps for ActiveCode exercise
 const ACTIVE_CODE_STEPS = [
-  { label: "Language" },
+  { label: "Language & DataFile" },
   { label: "Instructions" },
   { label: "Hidden Prefix" },
   { label: "Starter Code" },
@@ -48,20 +50,9 @@ const getDefaultFormData = (): Partial<CreateExerciseFormType> => ({
   prefix_code: "",
   suffix_code: "",
   instructions: "",
-  language: ""
+  language: "",
+  datafile: ""
 });
-
-// Create a wrapper for generateActiveCodePreview to match the expected type
-const generatePreview = (data: Partial<CreateExerciseFormType>): string => {
-  return generateActiveCodePreview(
-    data.instructions || "",
-    data.language || "python",
-    data.prefix_code || "",
-    data.starter_code || "",
-    data.suffix_code || "",
-    data.name || ""
-  );
-};
 
 export const ActiveCodeExercise: FC<ExerciseComponentProps> = ({
   initialData,
@@ -71,6 +62,27 @@ export const ActiveCodeExercise: FC<ExerciseComponentProps> = ({
   onFormReset,
   isEdit = false
 }) => {
+  const { data: dataFiles = [] } = useGetDataFilesQuery();
+
+  const generatePreview = (data: Partial<CreateExerciseFormType>): string => {
+    let dataFileData: DataFileListItem | undefined;
+
+    if (data.datafile) {
+      dataFileData = dataFiles.find((df: DataFileListItem) => df.name === data.datafile);
+    }
+
+    return generateActiveCodePreview(
+      data.instructions || "",
+      data.language || "python",
+      data.prefix_code || "",
+      data.starter_code || "",
+      data.suffix_code || "",
+      data.name || "",
+      data.datafile || "",
+      dataFileData
+    );
+  };
+
   const {
     formData,
     activeStep,
@@ -128,7 +140,14 @@ export const ActiveCodeExercise: FC<ExerciseComponentProps> = ({
     switch (activeStep) {
       case 0: // Language
         return (
-          <LanguageSelector language={formData.language || ""} onChange={handleLanguageChange} />
+          <div className="space-y-6">
+            <LanguageSelector language={formData.language || ""} onChange={handleLanguageChange} />
+            <DataFileSelector
+              selectedDataFile={formData.datafile}
+              onChange={(dataFileId: string | null) => updateFormData("datafile", dataFileId || "")}
+              language={formData.language || ""}
+            />
+          </div>
         );
 
       case 1: // Instructions
@@ -178,6 +197,7 @@ export const ActiveCodeExercise: FC<ExerciseComponentProps> = ({
             prefix_code={formData.prefix_code || ""}
             suffix_code={formData.suffix_code || ""}
             name={formData.name || ""}
+            datafile={formData.datafile || ""}
           />
         );
 

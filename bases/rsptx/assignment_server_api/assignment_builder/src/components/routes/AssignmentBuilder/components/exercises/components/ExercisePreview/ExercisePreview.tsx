@@ -30,11 +30,21 @@ export const ExercisePreview = ({
             .ptx-runestone-container .CodeMirror {
               height: auto !important;
             }
+            .exercise-preview-content img {
+              max-width: 100% !important;
+              height: auto !important;
+            }
+            .exercise-preview-content pre {
+              white-space: pre-wrap !important;
+              word-wrap: break-word !important;
+              overflow-x: auto !important;
+              max-width: 100% !important;
+            }
           `}
         </style>
-        <div className="ptx-runestone-container relative flex justify-content-center w-full">
-          <div className="flex justify-content-center">
-            <div ref={ref} className="text-left mx-auto"></div>
+        <div className="ptx-runestone-container exercise-preview-container relative flex justify-content-center w-full">
+          <div className="flex justify-content-center w-full">
+            <div ref={ref} className="exercise-preview-content text-left mx-auto w-full"></div>
           </div>
         </div>
       </MathJax>

@@ -1,4 +1,5 @@
 import { ExercisePreview } from "@components/routes/AssignmentBuilder/components/exercises/components/ExercisePreview/ExercisePreview";
+import { useGetDataFilesQuery, DataFileListItem } from "@store/datafile/datafile.logic.api";
 import { FC } from "react";
 
 import { generateActiveCodePreview } from "@/utils/preview/activeCode";
@@ -10,6 +11,7 @@ interface ActiveCodePreviewProps {
   starter_code: string;
   suffix_code: string;
   name: string;
+  datafile?: string;
 }
 
 export const ActiveCodePreview: FC<ActiveCodePreviewProps> = ({
@@ -18,8 +20,18 @@ export const ActiveCodePreview: FC<ActiveCodePreviewProps> = ({
   prefix_code,
   starter_code,
   suffix_code,
-  name
+  name,
+  datafile
 }) => {
+  const compatibleLanguages = ["python", "java"];
+  const isLanguageCompatible = compatibleLanguages.includes(language.toLowerCase());
+
+  const { data: dataFiles = [] } = useGetDataFilesQuery(undefined, {
+    skip: !isLanguageCompatible || !datafile
+  });
+
+  const dataFileData = dataFiles.find((df: DataFileListItem) => df.name === datafile);
+
   return (
     <div style={{ display: "flex", alignItems: "start", justifyContent: "center" }}>
       <ExercisePreview
@@ -29,7 +41,9 @@ export const ActiveCodePreview: FC<ActiveCodePreviewProps> = ({
           prefix_code,
           starter_code,
           suffix_code,
-          name
+          name,
+          datafile,
+          dataFileData
         )}
       />
     </div>

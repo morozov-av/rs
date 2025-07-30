@@ -65,6 +65,19 @@ async def update_source_code(acid: str, filename: str, course_id: str, main_code
         await session.commit()
 
 
+async def create_source_code(source_code: SourceCodeValidator) -> SourceCodeValidator:
+    """
+    Create a new source code entry with the given data
+
+    :param source_code: SourceCodeValidator, the source code data
+    :return: SourceCodeValidator
+    """
+    async with async_session.begin() as session:
+        new_source_code = SourceCode(**source_code.dict())
+        session.add(new_source_code)
+    return SourceCodeValidator.from_orm(new_source_code)
+
+
 async def fetch_source_code(
     base_course: str, course_name: str, acid: str = None, filename: str = None
 ) -> SourceCodeValidator:
@@ -107,3 +120,16 @@ async def fetch_source_code(
     async with async_session() as session:
         res = await session.execute(query)
         return SourceCodeValidator.from_orm(res.scalars().first())
+
+
+async def get_source_code_by_course(course_id: str):
+    """
+    Get all source code entries for a given course
+    
+    :param course_id: The course ID to filter by
+    :return: List of SourceCode objects
+    """
+    query = select(SourceCode).where(SourceCode.course_id == course_id)
+    async with async_session.begin() as session:
+        res = await session.execute(query)
+        return res.scalars().all()

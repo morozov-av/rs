@@ -3,15 +3,15 @@ import { FC } from "react";
 import { ExerciseComponentProps } from "../types/ExerciseTypes";
 
 import {
-  ParsonsExercise,
   ActiveCodeExercise,
-  FillInTheBlankExercise,
-  DragAndDropExercise,
   ClickableAreaExercise,
-  PollExercise,
-  ShortAnswerExercise,
+  DragAndDropExercise,
+  FillInTheBlankExercise,
+  MatchingExercise,
   MultiChoiceExercise,
-  MatchingExercise
+  ParsonsExercise,
+  PollExercise,
+  ShortAnswerExercise
 } from ".";
 
 export const ExerciseFactory: FC<ExerciseComponentProps> = (props) => {

@@ -63,6 +63,8 @@ from rsptx.db.crud import (
     search_exercises,
     create_api_token,
 )
+from rsptx.db.crud.rsfiles import create_source_code
+from rsptx.db.crud.datafile_metadata import create_datafile_metadata, get_datafiles_with_metadata
 from rsptx.db.crud.question import validate_question_name_unique, copy_question
 from rsptx.db.crud.assignment import add_assignment_question, delete_assignment
 from rsptx.auth.session import auth_manager, is_instructor
@@ -78,6 +80,7 @@ from rsptx.db.models import (
     AssignmentQuestionValidator,
     AssignmentValidator,
     QuestionValidator,
+    SourceCodeValidator,
 )
 from rsptx.endpoint_validators import with_course, instructor_role_required
 from rsptx.validation.schemas import (
@@ -1301,6 +1304,119 @@ async def question_creation(
         )
 
     return make_json_response(status=status.HTTP_201_CREATED)
+
+
+class DataFileRequest(BaseModel):
+    name: str  # acid for the datafile
+    filename: str
+    file_content: str
+    file_type: str
+    is_editable: bool = False
+    rows: int = 10
+    cols: int = 50
+
+
+@router.post("/datafile")
+@instructor_role_required()
+async def create_datafile(
+    request_data: DataFileRequest, 
+    request: Request, 
+    user=Depends(auth_manager)
+):
+    """
+    Create a DataFile entry in the source_code table.
+    DataFiles are not part of assignments or questions - they're just data files.
+    """
+    course = await fetch_course(user.course_name)
+    
+    try:
+        # Create source_code entry for the datafile
+        source_code_entry = SourceCodeValidator(
+            acid=request_data.name,
+            course_id=course.base_course,
+            filename=request_data.filename,
+            main_code=request_data.file_content
+        )
+        
+        created_entry = await create_source_code(source_code_entry)
+        
+        # Create metadata entry for display settings
+        await create_datafile_metadata(
+            source_code_id=created_entry.id,
+            is_editable=request_data.is_editable,
+            rows=request_data.rows,
+            cols=request_data.cols
+        )
+        
+        rslogger.info(f"Created datafile in source_code table: {request_data.name} ({request_data.filename})")
+        
+        return make_json_response(
+            status=status.HTTP_201_CREATED, 
+            detail={
+                "status": "success", 
+                "id": created_entry.id,
+                "acid": created_entry.acid,
+                "filename": created_entry.filename
+            }
+        )
+        
+    except Exception as e:
+        rslogger.error(f"Error creating datafile: {e}")
+        return make_json_response(
+            status=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error creating datafile: {str(e)}"
+        )
+
+
+@router.get("/datafiles")
+@instructor_role_required()
+async def get_datafiles(
+    request: Request,
+    user=Depends(auth_manager)
+):
+    """
+    Get all DataFiles for the current course.
+    """
+    course = await fetch_course(user.course_name)
+
+    try:
+        datafiles = await get_datafiles_with_metadata(course.base_course)
+        
+        datafiles_list = []
+        for df in datafiles:
+            file_type = "txt"
+            if df.filename:
+                ext = df.filename.split('.')[-1].lower()
+                if ext in ['csv', 'json', 'xml', 'jpg', 'jpeg', 'png']:
+                    file_type = ext
+
+            metadata = df.metadata[0] if df.metadata else None
+            is_editable = metadata.is_editable if metadata else False
+            rows = metadata.rows if metadata else 10
+            cols = metadata.cols if metadata else 50
+
+            datafiles_list.append({
+                "id": df.id,
+                "name": df.acid,
+                "filename": df.filename,
+                "file_type": file_type,
+                "file_content": df.main_code,
+                "is_editable": is_editable,
+                "rows": rows,
+                "cols": cols
+            })
+        
+        rslogger.info(f"Retrieved {len(datafiles_list)} datafiles for course {course.base_course}")
+        return make_json_response(
+            status=status.HTTP_200_OK,
+            detail=datafiles_list
+        )
+    except Exception as e:
+        rslogger.error(f"Error retrieving datafiles: {e}")
+        return make_json_response(
+            status=status.HTTP_400_BAD_REQUEST,
+            detail=f"Error retrieving datafiles: {str(e)}"
+        )
 
 
 class AddTokenRequest(BaseModel):
