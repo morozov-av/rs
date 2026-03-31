@@ -11,6 +11,8 @@ import { exercisesSlice } from "@store/exercises/exercises.logic";
 import { exercisesApi } from "@store/exercises/exercises.logic.api";
 import { readingsSlice } from "@store/readings/readings.logic";
 import { readingsApi } from "@store/readings/readings.logic.api";
+import { graderSlice } from "@store/grader/grader.logic";
+import { graderApi } from "@store/grader/grader.logic.api";
 import { searchExercisesSlice } from "@store/searchExercises/searchExercises.logic";
 import { userSlice } from "@store/user/userLogic.js";
 import { StateType } from "typesafe-actions";
@@ -45,10 +47,12 @@ const reducersMap = {
   searchExercises: searchExercisesSlice.reducer,
   dataset: datasetSlice.reducer,
   assignmentExercise: assignmentExerciseSlice.reducer,
+  grader: graderSlice.reducer,
   [readingsApi.reducerPath]: readingsApi.reducer,
   [exercisesApi.reducerPath]: exercisesApi.reducer,
   [datasetApi.reducerPath]: datasetApi.reducer,
-  [datafileApi.reducerPath]: datafileApi.reducer
+  [datafileApi.reducerPath]: datafileApi.reducer,
+  [graderApi.reducerPath]: graderApi.reducer
 };
 
 export type RootState = StateType<typeof reducersMap>;
@@ -64,7 +68,8 @@ export const setupStore = (preloadedState?: Partial<RootState>) => {
         readingsApi.middleware,
         exercisesApi.middleware,
         datasetApi.middleware,
-        datafileApi.middleware
+        datafileApi.middleware,
+        graderApi.middleware
       );
     }
   });

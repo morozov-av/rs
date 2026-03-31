@@ -271,6 +271,14 @@ function App() {
               element: <AssignmentGrader />
             },
             {
+              path: "graderV2",
+              async lazy() {
+                let { GraderV2 } = await import("@components/routes/GraderV2");
+
+                return { Component: GraderV2 };
+              }
+            },
+            {
               path: "admin",
               element: <h1>Coming Soon</h1>
             },

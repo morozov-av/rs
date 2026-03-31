@@ -9,6 +9,8 @@ import { datasetSlice } from "@store/dataset/dataset.logic";
 import { datasetApi } from "@store/dataset/dataset.logic.api";
 import { exercisesSlice } from "@store/exercises/exercises.logic";
 import { exercisesApi } from "@store/exercises/exercises.logic.api";
+import { graderSlice } from "@store/grader/grader.logic";
+import { graderApi } from "@store/grader/grader.logic.api";
 import { readingsSlice } from "@store/readings/readings.logic";
 import { readingsApi } from "@store/readings/readings.logic.api";
 import { searchExercisesSlice } from "@store/searchExercises/searchExercises.logic";
@@ -24,12 +26,14 @@ const reducersMap = {
   searchExercises: searchExercisesSlice.reducer,
   dataset: datasetSlice.reducer,
   assignmentExercise: assignmentExerciseSlice.reducer,
+  grader: graderSlice.reducer,
   [assignmentApi.reducerPath]: assignmentApi.reducer,
   [assignmentExerciseApi.reducerPath]: assignmentExerciseApi.reducer,
   [readingsApi.reducerPath]: readingsApi.reducer,
   [exercisesApi.reducerPath]: exercisesApi.reducer,
   [datasetApi.reducerPath]: datasetApi.reducer,
-  [datafileApi.reducerPath]: datafileApi.reducer
+  [datafileApi.reducerPath]: datafileApi.reducer,
+  [graderApi.reducerPath]: graderApi.reducer
 };
 
 export const rootReducer = combineReducers(reducersMap);

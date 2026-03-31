@@ -62,6 +62,11 @@ export const buildNavBar = (eBookConfig: EBookConfig, navigate?: (path: string) 
       command: () => navigateToPath("builder")
     },
     {
+      label: "Grader V2",
+      icon: "pi pi-gauge",
+      command: () => navigateToPath("graderV2")
+    },
+    {
       label: "User",
       icon: "pi pi-user",
       items: [
