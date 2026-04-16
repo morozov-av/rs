@@ -1,12 +1,18 @@
 /**
  * Comprehensive mock / test data for the GraderV2 interface.
  *
- * Covers all supported question types:
+ * Covers ALL supported question types:
  * - Multiple Choice (mchoice)
  * - Fill-in-the-Blank (fillintheblank)
  * - Short Answer (shortanswer)
  * - Active Code (activecode)
  * - Parsons Problem (parsonsprob)
+ * - Poll (poll)
+ * - Drag & Drop (dragndrop)
+ * - Clickable Area (clickablearea)
+ * - Matching (matching)
+ * - Select Question (selectquestion)
+ * - Iframe (iframe)
  */
 import {
   CodeHistoryEntry,
@@ -81,6 +87,78 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
     minScore: 0,
     maxScore: 15,
     submissionCount: 26,
+    totalStudents: 30
+  },
+  {
+    questionId: 1006,
+    qnumber: "q_poll_1",
+    title: "Preferred programming language",
+    questionType: "poll",
+    maxPoints: 1,
+    averageScore: 1.0,
+    minScore: 1,
+    maxScore: 1,
+    submissionCount: 30,
+    totalStudents: 30
+  },
+  {
+    questionId: 1007,
+    qnumber: "q_dnd_1",
+    title: "Match data structures to descriptions",
+    questionType: "dragndrop",
+    maxPoints: 10,
+    averageScore: 7.2,
+    minScore: 0,
+    maxScore: 10,
+    submissionCount: 28,
+    totalStudents: 30
+  },
+  {
+    questionId: 1008,
+    qnumber: "q_ca_1",
+    title: "Click on the syntax errors",
+    questionType: "clickablearea",
+    maxPoints: 8,
+    averageScore: 5.5,
+    minScore: 0,
+    maxScore: 8,
+    submissionCount: 25,
+    totalStudents: 30
+  },
+  {
+    questionId: 1009,
+    qnumber: "q_match_1",
+    title: "Match sorting algorithms to complexities",
+    questionType: "matching",
+    maxPoints: 12,
+    averageScore: 9.0,
+    minScore: 0,
+    maxScore: 12,
+    submissionCount: 27,
+    totalStudents: 30
+  },
+  {
+    questionId: 1010,
+    qnumber: "q_sel_1",
+    title: "Random review question",
+    questionType: "selectquestion",
+    maxPoints: 10,
+    averageScore: 6.8,
+    minScore: 0,
+    maxScore: 10,
+    submissionCount: 29,
+    totalStudents: 30
+  },
+  {
+    questionId: 1011,
+    qnumber: "q_iframe_1",
+    title: "External SQL sandbox",
+    questionType: "iframe",
+    maxPoints: 15,
+    averageScore: 10.5,
+    minScore: 0,
+    maxScore: 15,
+    submissionCount: 22,
     totalStudents: 30
   }
 ];
@@ -503,6 +581,408 @@ export const mockedParsonsAnswersResponse: GetStudentAnswersResponse = {
 };
 
 // ---------------------------------------------------------------------------
+// Poll answers
+// ---------------------------------------------------------------------------
+
+export const mockedPollAnswers: StudentAnswer[] = [
+  {
+    id: 8001,
+    sid: "alice",
+    qnumber: "q_poll_1",
+    answer: "2",
+    correct: true,
+    points: 1,
+    maxPoints: 1,
+    comment: "",
+    timestamp: "2025-03-20T19:00:00",
+    questionType: "poll"
+  },
+  {
+    id: 8002,
+    sid: "bob",
+    qnumber: "q_poll_1",
+    answer: "1",
+    correct: true,
+    points: 1,
+    maxPoints: 1,
+    comment: "",
+    timestamp: "2025-03-20T19:01:00",
+    questionType: "poll"
+  },
+  {
+    id: 8003,
+    sid: "charlie",
+    qnumber: "q_poll_1",
+    answer: "3",
+    correct: true,
+    points: 1,
+    maxPoints: 1,
+    comment: "",
+    timestamp: "2025-03-20T19:02:00",
+    questionType: "poll"
+  },
+  {
+    id: 8004,
+    sid: "diana",
+    qnumber: "q_poll_1",
+    answer: "2",
+    correct: true,
+    points: 1,
+    maxPoints: 1,
+    comment: "",
+    timestamp: "2025-03-20T19:05:00",
+    questionType: "poll"
+  },
+  {
+    id: 8005,
+    sid: "eve",
+    qnumber: "q_poll_1",
+    answer: "4",
+    correct: true,
+    points: 1,
+    maxPoints: 1,
+    comment: "",
+    timestamp: "2025-03-20T19:03:00",
+    questionType: "poll"
+  }
+];
+
+export const mockedPollAnswersResponse: GetStudentAnswersResponse = {
+  answers: mockedPollAnswers
+};
+
+// ---------------------------------------------------------------------------
+// Drag & Drop answers
+// ---------------------------------------------------------------------------
+
+export const mockedDnDAnswers: StudentAnswer[] = [
+  {
+    id: 9001,
+    sid: "alice",
+    qnumber: "q_dnd_1",
+    answer: "Array:Sequential storage;LinkedList:Node-based storage;HashMap:Key-value pairs;Tree:Hierarchical structure",
+    correct: true,
+    points: 10,
+    maxPoints: 10,
+    comment: "",
+    timestamp: "2025-03-20T20:00:00",
+    questionType: "dragndrop"
+  },
+  {
+    id: 9002,
+    sid: "bob",
+    qnumber: "q_dnd_1",
+    answer: "Array:Sequential storage;LinkedList:Key-value pairs;HashMap:Node-based storage;Tree:Hierarchical structure",
+    correct: false,
+    points: 5,
+    maxPoints: 10,
+    comment: "Swapped LinkedList and HashMap",
+    timestamp: "2025-03-20T20:02:00",
+    questionType: "dragndrop"
+  },
+  {
+    id: 9003,
+    sid: "charlie",
+    qnumber: "q_dnd_1",
+    answer: "Array:Sequential storage;LinkedList:Node-based storage;HashMap:Key-value pairs;Tree:Hierarchical structure",
+    correct: true,
+    points: 10,
+    maxPoints: 10,
+    comment: "",
+    timestamp: "2025-03-20T20:01:00",
+    questionType: "dragndrop"
+  },
+  {
+    id: 9004,
+    sid: "diana",
+    qnumber: "q_dnd_1",
+    answer: "Array:Hierarchical structure;LinkedList:Sequential storage;HashMap:Node-based storage;Tree:Key-value pairs",
+    correct: false,
+    points: 0,
+    maxPoints: 10,
+    comment: "All pairs incorrect",
+    timestamp: "2025-03-20T20:10:00",
+    questionType: "dragndrop"
+  }
+];
+
+export const mockedDnDAnswersResponse: GetStudentAnswersResponse = {
+  answers: mockedDnDAnswers
+};
+
+// ---------------------------------------------------------------------------
+// Clickable Area answers
+// ---------------------------------------------------------------------------
+
+export const mockedClickableAreaAnswers: StudentAnswer[] = [
+  {
+    id: 10001,
+    sid: "alice",
+    qnumber: "q_ca_1",
+    answer: "correct:1,3,5;incorrect:",
+    correct: true,
+    points: 8,
+    maxPoints: 8,
+    comment: "",
+    timestamp: "2025-03-20T21:00:00",
+    questionType: "clickablearea"
+  },
+  {
+    id: 10002,
+    sid: "bob",
+    qnumber: "q_ca_1",
+    answer: "correct:1,3;incorrect:2",
+    correct: false,
+    points: 4,
+    maxPoints: 8,
+    comment: "Missed line 5, false positive on line 2",
+    timestamp: "2025-03-20T21:01:00",
+    questionType: "clickablearea"
+  },
+  {
+    id: 10003,
+    sid: "charlie",
+    qnumber: "q_ca_1",
+    answer: "correct:1,3,5;incorrect:4",
+    correct: false,
+    points: 6,
+    maxPoints: 8,
+    comment: "All correct areas found, but also clicked line 4",
+    timestamp: "2025-03-20T21:02:00",
+    questionType: "clickablearea"
+  },
+  {
+    id: 10004,
+    sid: "diana",
+    qnumber: "q_ca_1",
+    answer: "correct:;incorrect:2,4,6",
+    correct: false,
+    points: 0,
+    maxPoints: 8,
+    comment: "No correct areas identified",
+    timestamp: "2025-03-20T21:10:00",
+    questionType: "clickablearea"
+  },
+  {
+    id: 10005,
+    sid: "eve",
+    qnumber: "q_ca_1",
+    answer: "correct:1,5;incorrect:",
+    correct: false,
+    points: 5,
+    maxPoints: 8,
+    comment: "Missed line 3",
+    timestamp: "2025-03-20T21:05:00",
+    questionType: "clickablearea"
+  }
+];
+
+export const mockedClickableAreaAnswersResponse: GetStudentAnswersResponse = {
+  answers: mockedClickableAreaAnswers
+};
+
+// ---------------------------------------------------------------------------
+// Matching answers
+// ---------------------------------------------------------------------------
+
+export const mockedMatchingAnswers: StudentAnswer[] = [
+  {
+    id: 11001,
+    sid: "alice",
+    qnumber: "q_match_1",
+    answer: "BubbleSort:O(n²);MergeSort:O(n log n);QuickSort:O(n log n);InsertionSort:O(n²)",
+    correct: true,
+    points: 12,
+    maxPoints: 12,
+    comment: "",
+    timestamp: "2025-03-20T22:00:00",
+    questionType: "matching"
+  },
+  {
+    id: 11002,
+    sid: "bob",
+    qnumber: "q_match_1",
+    answer: "BubbleSort:O(n²);MergeSort:O(n²);QuickSort:O(n log n);InsertionSort:O(n log n)",
+    correct: false,
+    points: 6,
+    maxPoints: 12,
+    comment: "Swapped MergeSort and InsertionSort complexities",
+    timestamp: "2025-03-20T22:02:00",
+    questionType: "matching"
+  },
+  {
+    id: 11003,
+    sid: "charlie",
+    qnumber: "q_match_1",
+    answer: "BubbleSort:O(n²);MergeSort:O(n log n);QuickSort:O(n log n);InsertionSort:O(n²)",
+    correct: true,
+    points: 12,
+    maxPoints: 12,
+    comment: "",
+    timestamp: "2025-03-20T22:01:00",
+    questionType: "matching"
+  },
+  {
+    id: 11004,
+    sid: "diana",
+    qnumber: "q_match_1",
+    answer: "BubbleSort:O(n log n);MergeSort:O(n²);QuickSort:O(n²);InsertionSort:O(n log n)",
+    correct: false,
+    points: 0,
+    maxPoints: 12,
+    comment: "All pairs reversed",
+    timestamp: "2025-03-20T22:15:00",
+    questionType: "matching"
+  },
+  {
+    id: 11005,
+    sid: "eve",
+    qnumber: "q_match_1",
+    answer: "BubbleSort:O(n²);MergeSort:O(n log n);QuickSort:O(n²);InsertionSort:O(n²)",
+    correct: false,
+    points: 9,
+    maxPoints: 12,
+    comment: "QuickSort average case is O(n log n), not O(n²)",
+    timestamp: "2025-03-20T22:03:00",
+    questionType: "matching"
+  }
+];
+
+export const mockedMatchingAnswersResponse: GetStudentAnswersResponse = {
+  answers: mockedMatchingAnswers
+};
+
+// ---------------------------------------------------------------------------
+// Select Question answers
+// ---------------------------------------------------------------------------
+
+export const mockedSelectQuestionAnswers: StudentAnswer[] = [
+  {
+    id: 12001,
+    sid: "alice",
+    qnumber: "q_sel_1",
+    answer: "B",
+    correct: true,
+    points: 10,
+    maxPoints: 10,
+    comment: "",
+    timestamp: "2025-03-20T23:00:00",
+    questionType: "selectquestion"
+  },
+  {
+    id: 12002,
+    sid: "bob",
+    qnumber: "q_sel_1",
+    answer: "C",
+    correct: false,
+    points: 0,
+    maxPoints: 10,
+    comment: "",
+    timestamp: "2025-03-20T23:02:00",
+    questionType: "selectquestion"
+  },
+  {
+    id: 12003,
+    sid: "charlie",
+    qnumber: "q_sel_1",
+    answer: "B",
+    correct: true,
+    points: 10,
+    maxPoints: 10,
+    comment: "",
+    timestamp: "2025-03-20T23:01:00",
+    questionType: "selectquestion"
+  },
+  {
+    id: 12004,
+    sid: "diana",
+    qnumber: "q_sel_1",
+    answer: "A",
+    correct: false,
+    points: 3,
+    maxPoints: 10,
+    comment: "Partial credit – related concept",
+    timestamp: "2025-03-20T23:10:00",
+    questionType: "selectquestion"
+  }
+];
+
+export const mockedSelectQuestionAnswersResponse: GetStudentAnswersResponse = {
+  answers: mockedSelectQuestionAnswers
+};
+
+// ---------------------------------------------------------------------------
+// Iframe answers
+// ---------------------------------------------------------------------------
+
+export const mockedIframeAnswers: StudentAnswer[] = [
+  {
+    id: 13001,
+    sid: "alice",
+    qnumber: "q_iframe_1",
+    answer: "SELECT * FROM users WHERE age > 21 ORDER BY name;",
+    correct: true,
+    points: 15,
+    maxPoints: 15,
+    comment: "",
+    timestamp: "2025-03-21T10:00:00",
+    questionType: "iframe"
+  },
+  {
+    id: 13002,
+    sid: "bob",
+    qnumber: "q_iframe_1",
+    answer: "SELECT * FROM users WHERE age > 21;",
+    correct: false,
+    points: 10,
+    maxPoints: 15,
+    comment: "Missing ORDER BY clause",
+    timestamp: "2025-03-21T10:05:00",
+    questionType: "iframe"
+  },
+  {
+    id: 13003,
+    sid: "charlie",
+    qnumber: "q_iframe_1",
+    answer: "SELECT name, age FROM users WHERE age > 21 ORDER BY name ASC;",
+    correct: true,
+    points: 15,
+    maxPoints: 15,
+    comment: "Extra specificity – good practice",
+    timestamp: "2025-03-21T10:02:00",
+    questionType: "iframe"
+  },
+  {
+    id: 13004,
+    sid: "diana",
+    qnumber: "q_iframe_1",
+    answer: "SELECT FROM users;",
+    correct: false,
+    points: 2,
+    maxPoints: 15,
+    comment: "Invalid SQL syntax, missing column list",
+    timestamp: "2025-03-21T10:20:00",
+    questionType: "iframe"
+  },
+  {
+    id: 13005,
+    sid: "eve",
+    qnumber: "q_iframe_1",
+    answer: "SELECT * FROM users WHERE age > 21 ORDER BY name DESC;",
+    correct: false,
+    points: 12,
+    maxPoints: 15,
+    comment: "DESC instead of ASC – minor issue",
+    timestamp: "2025-03-21T10:08:00",
+    questionType: "iframe"
+  }
+];
+
+export const mockedIframeAnswersResponse: GetStudentAnswersResponse = {
+  answers: mockedIframeAnswers
+};
+
+// ---------------------------------------------------------------------------
 // Helper map: questionId → mocked answers response
 // ---------------------------------------------------------------------------
 
@@ -511,7 +991,13 @@ export const mockedAnswersByQuestionId: Record<number, GetStudentAnswersResponse
   1002: mockedFIBAnswersResponse,
   1003: mockedShortAnswersResponse,
   1004: mockedCodeAnswersResponse,
-  1005: mockedParsonsAnswersResponse
+  1005: mockedParsonsAnswersResponse,
+  1006: mockedPollAnswersResponse,
+  1007: mockedDnDAnswersResponse,
+  1008: mockedClickableAreaAnswersResponse,
+  1009: mockedMatchingAnswersResponse,
+  1010: mockedSelectQuestionAnswersResponse,
+  1011: mockedIframeAnswersResponse
 };
 
 // ---------------------------------------------------------------------------

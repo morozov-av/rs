@@ -8,6 +8,12 @@ import {
   mockedShortAnswers,
   mockedCodeAnswers,
   mockedParsonsAnswers,
+  mockedPollAnswers,
+  mockedDnDAnswers,
+  mockedClickableAreaAnswers,
+  mockedMatchingAnswers,
+  mockedSelectQuestionAnswers,
+  mockedIframeAnswers,
   mockedAliceCodeHistory,
   mockedBobCodeHistory,
   mockedAnswersByQuestionId,
@@ -16,8 +22,8 @@ import {
 
 describe("mockedGraderData", () => {
   describe("Question summaries", () => {
-    it("has 5 question summaries covering all question types", () => {
-      expect(mockedQuestionSummaries).toHaveLength(5);
+    it("has 11 question summaries covering all question types", () => {
+      expect(mockedQuestionSummaries).toHaveLength(11);
 
       const types = mockedQuestionSummaries.map((s) => s.questionType);
 
@@ -26,6 +32,17 @@ describe("mockedGraderData", () => {
       expect(types).toContain("shortanswer");
       expect(types).toContain("activecode");
       expect(types).toContain("parsonsprob");
+      expect(types).toContain("poll");
+      expect(types).toContain("dragndrop");
+      expect(types).toContain("clickablearea");
+      expect(types).toContain("matching");
+      expect(types).toContain("selectquestion");
+      expect(types).toContain("iframe");
+    });
+
+    it("has unique question ids", () => {
+      const ids = mockedQuestionSummaries.map((s) => s.questionId);
+      expect(new Set(ids).size).toBe(ids.length);
     });
 
     it("has valid numeric fields", () => {
@@ -138,9 +155,145 @@ describe("mockedGraderData", () => {
     });
   });
 
+  describe("Poll answers", () => {
+    it("contains 5 student answers", () => {
+      expect(mockedPollAnswers).toHaveLength(5);
+    });
+
+    it("all answers reference q_poll_1", () => {
+      mockedPollAnswers.forEach((a) => expect(a.qnumber).toBe("q_poll_1"));
+    });
+
+    it("all poll answers are marked correct (participation credit)", () => {
+      mockedPollAnswers.forEach((a) => {
+        expect(a.correct).toBe(true);
+        expect(a.points).toBe(1);
+      });
+    });
+
+    it("answers are numeric option indices", () => {
+      mockedPollAnswers.forEach((a) => {
+        expect(Number.isNaN(Number(a.answer))).toBe(false);
+      });
+    });
+  });
+
+  describe("Drag & Drop answers", () => {
+    it("contains 4 student answers", () => {
+      expect(mockedDnDAnswers).toHaveLength(4);
+    });
+
+    it("all answers reference q_dnd_1", () => {
+      mockedDnDAnswers.forEach((a) => expect(a.qnumber).toBe("q_dnd_1"));
+    });
+
+    it("answer format contains key:value pairs separated by semicolons", () => {
+      mockedDnDAnswers.forEach((a) => {
+        expect(a.answer).toContain(":");
+        expect(a.answer).toContain(";");
+      });
+    });
+
+    it("has mix of correct and incorrect", () => {
+      const correct = mockedDnDAnswers.filter((a) => a.correct);
+      const incorrect = mockedDnDAnswers.filter((a) => !a.correct);
+      expect(correct.length).toBeGreaterThan(0);
+      expect(incorrect.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Clickable Area answers", () => {
+    it("contains 5 student answers", () => {
+      expect(mockedClickableAreaAnswers).toHaveLength(5);
+    });
+
+    it("all answers reference q_ca_1", () => {
+      mockedClickableAreaAnswers.forEach((a) => expect(a.qnumber).toBe("q_ca_1"));
+    });
+
+    it("answer format contains correct: and incorrect: sections", () => {
+      mockedClickableAreaAnswers.forEach((a) => {
+        expect(a.answer).toContain("correct:");
+        expect(a.answer).toContain("incorrect:");
+      });
+    });
+
+    it("includes partial credit scenarios", () => {
+      const partial = mockedClickableAreaAnswers.filter(
+        (a) => !a.correct && a.points > 0 && a.points < a.maxPoints
+      );
+      expect(partial.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("Matching answers", () => {
+    it("contains 5 student answers", () => {
+      expect(mockedMatchingAnswers).toHaveLength(5);
+    });
+
+    it("all answers reference q_match_1", () => {
+      mockedMatchingAnswers.forEach((a) => expect(a.qnumber).toBe("q_match_1"));
+    });
+
+    it("answer format contains key:value pairs separated by semicolons", () => {
+      mockedMatchingAnswers.forEach((a) => {
+        expect(a.answer).toContain(":");
+        expect(a.answer).toContain(";");
+      });
+    });
+
+    it("has zero-point, partial-credit, and full-credit answers", () => {
+      const points = mockedMatchingAnswers.map((a) => a.points);
+      expect(points).toContain(0);
+      expect(points).toContain(12); // full
+      expect(points.some((p) => p > 0 && p < 12)).toBe(true); // partial
+    });
+  });
+
+  describe("Select Question answers", () => {
+    it("contains 4 student answers", () => {
+      expect(mockedSelectQuestionAnswers).toHaveLength(4);
+    });
+
+    it("all answers reference q_sel_1", () => {
+      mockedSelectQuestionAnswers.forEach((a) => expect(a.qnumber).toBe("q_sel_1"));
+    });
+
+    it("includes partial credit (diana)", () => {
+      const diana = mockedSelectQuestionAnswers.find((a) => a.sid === "diana");
+      expect(diana).toBeDefined();
+      expect(diana!.correct).toBe(false);
+      expect(diana!.points).toBeGreaterThan(0);
+      expect(diana!.points).toBeLessThan(diana!.maxPoints);
+    });
+  });
+
+  describe("Iframe answers", () => {
+    it("contains 5 student answers", () => {
+      expect(mockedIframeAnswers).toHaveLength(5);
+    });
+
+    it("all answers reference q_iframe_1", () => {
+      mockedIframeAnswers.forEach((a) => expect(a.qnumber).toBe("q_iframe_1"));
+    });
+
+    it("answers contain SQL-like content", () => {
+      mockedIframeAnswers.forEach((a) => {
+        expect(a.answer.toUpperCase()).toContain("SELECT");
+      });
+    });
+
+    it("has grader comments on incorrect answers", () => {
+      const incorrectWithComments = mockedIframeAnswers.filter(
+        (a) => !a.correct && a.comment.length > 0
+      );
+      expect(incorrectWithComments.length).toBeGreaterThanOrEqual(2);
+    });
+  });
+
   describe("Lookup maps", () => {
-    it("mockedAnswersByQuestionId contains all 5 question ids", () => {
-      expect(Object.keys(mockedAnswersByQuestionId)).toHaveLength(5);
+    it("mockedAnswersByQuestionId contains all 11 question ids", () => {
+      expect(Object.keys(mockedAnswersByQuestionId)).toHaveLength(11);
     });
 
     it("mockedCodeHistoryBySid contains alice and bob", () => {
