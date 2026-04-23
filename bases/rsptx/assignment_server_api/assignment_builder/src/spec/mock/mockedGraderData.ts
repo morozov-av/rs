@@ -32,6 +32,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1001,
     qnumber: "q_mc_1",
+    name: "grader_mc_capitals",
     title: "Capital of France",
     questionType: "mchoice",
     maxPoints: 10,
@@ -44,6 +45,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1002,
     qnumber: "q_fib_1",
+    name: "grader_fitb_html",
     title: "Python print() syntax",
     questionType: "fillintheblank",
     maxPoints: 5,
@@ -56,6 +58,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1003,
     qnumber: "q_sa_1",
+    name: "grader_sa_explain",
     title: "Explain recursion",
     questionType: "shortanswer",
     maxPoints: 20,
@@ -68,6 +71,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1004,
     qnumber: "q_ac_1",
+    name: "grader_ac_fibonacci",
     title: "Fibonacci function",
     questionType: "activecode",
     maxPoints: 25,
@@ -80,6 +84,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1005,
     qnumber: "q_parsons_1",
+    name: "grader_parsons_swap",
     title: "Sort a list",
     questionType: "parsonsprob",
     maxPoints: 15,
@@ -92,6 +97,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1006,
     qnumber: "q_poll_1",
+    name: "grader_poll_language",
     title: "Preferred programming language",
     questionType: "poll",
     maxPoints: 1,
@@ -104,6 +110,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1007,
     qnumber: "q_dnd_1",
+    name: "grader_dnd_datastructs",
     title: "Match data structures to descriptions",
     questionType: "dragndrop",
     maxPoints: 10,
@@ -116,6 +123,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1008,
     qnumber: "q_ca_1",
+    name: "grader_ca_syntax",
     title: "Click on the syntax errors",
     questionType: "clickablearea",
     maxPoints: 8,
@@ -128,6 +136,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1009,
     qnumber: "q_match_1",
+    name: "grader_match_sorting",
     title: "Match sorting algorithms to complexities",
     questionType: "matching",
     maxPoints: 12,
@@ -140,6 +149,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1010,
     qnumber: "q_sel_1",
+    name: "grader_sel_review",
     title: "Random review question",
     questionType: "selectquestion",
     maxPoints: 10,
@@ -152,6 +162,7 @@ export const mockedQuestionSummaries: QuestionSummary[] = [
   {
     questionId: 1011,
     qnumber: "q_iframe_1",
+    name: "grader_iframe_sql",
     title: "External SQL sandbox",
     questionType: "iframe",
     maxPoints: 15,

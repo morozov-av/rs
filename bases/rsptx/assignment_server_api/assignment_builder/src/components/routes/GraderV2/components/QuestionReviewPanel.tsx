@@ -18,6 +18,7 @@ interface QuestionReviewPanelProps {
   questionSummary: QuestionSummary;
   answers: StudentAnswer[];
   answersLoading: boolean;
+  assignmentId?: number;
   onBack: () => void;
 }
 
@@ -25,6 +26,7 @@ export const QuestionReviewPanel: React.FC<QuestionReviewPanelProps> = ({
   questionSummary,
   answers,
   answersLoading,
+  assignmentId,
   onBack
 }) => {
   const [updateGrade] = useUpdateGradeMutation();
@@ -98,7 +100,12 @@ export const QuestionReviewPanel: React.FC<QuestionReviewPanelProps> = ({
       )}
 
       {category === "parsons" && (
-        <ParsonsAnswerView answers={answers} onGradeUpdate={handleGradeUpdate} />
+        <ParsonsAnswerView
+          answers={answers}
+          questionName={questionSummary.name}
+          assignmentId={assignmentId}
+          onGradeUpdate={handleGradeUpdate}
+        />
       )}
     </div>
   );

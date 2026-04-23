@@ -127,6 +127,7 @@ export const GraderV2: React.FC = () => {
             questionSummary={selectedQuestionSummary}
             answers={answersData?.answers ?? []}
             answersLoading={answersLoading}
+            assignmentId={selectedAssignmentId ?? undefined}
             onBack={handleBackToSummary}
           />
         )}

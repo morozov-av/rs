@@ -74,8 +74,10 @@ export interface ParsonsStudentAnswer extends StudentAnswer {
 export interface QuestionSummary {
   /** The exercise / question id. */
   questionId: number;
-  /** The question number string. */
+  /** The question number string (display label, e.g. "Q-9"). */
   qnumber: string;
+  /** The question name / div_id used in Runestone (e.g. "grader_parsons_swap"). */
+  name: string;
   /** Display title of the question. */
   title: string;
   /** The type of question. */
@@ -126,6 +128,17 @@ export interface UpdateGradeResponse {
   success: boolean;
 }
 
+export interface GetQuestionHtmlSrcRequest {
+  /** The question name (qnumber / acid). */
+  acid: string;
+  /** Optional assignment id for context. */
+  assignmentId?: number;
+}
+
+export interface GetQuestionHtmlSrcResponse {
+  htmlsrc: string;
+}
+
 export interface GetQuestionSummariesRequest {
   assignmentId: number;
 }
@@ -148,5 +161,4 @@ export interface GraderState {
   /** Current view mode. */
   viewMode: GraderViewMode;
 }
-
 

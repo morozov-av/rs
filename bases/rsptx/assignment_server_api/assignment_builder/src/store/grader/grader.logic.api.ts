@@ -14,6 +14,8 @@ import { DetailResponse } from "@/types/api";
 import {
   GetCodeHistoryRequest,
   GetCodeHistoryResponse,
+  GetQuestionHtmlSrcRequest,
+  GetQuestionHtmlSrcResponse,
   GetQuestionSummariesRequest,
   GetQuestionSummariesResponse,
   GetStudentAnswersRequest,
@@ -77,6 +79,18 @@ export const graderApi = createApi({
       invalidatesTags: ["StudentAnswers", "GraderSummaries"],
       transformResponse: (response: DetailResponse<UpdateGradeResponse>) =>
         response.detail
+    }),
+
+    /** Fetch the HTML source for a question (used for Runestone preview). */
+    getQuestionHtmlSrc: build.query<GetQuestionHtmlSrcResponse, GetQuestionHtmlSrcRequest>({
+      query: ({ acid, assignmentId }) => ({
+        method: "GET",
+        url: `/ns/assessment/htmlsrc`,
+        params: { acid, ...(assignmentId ? { assignmentId } : {}) }
+      }),
+      transformResponse: (response: { detail: string }) => ({
+        htmlsrc: response.detail
+      })
     })
   })
 });
@@ -85,6 +99,7 @@ export const {
   useGetQuestionSummariesQuery,
   useGetStudentAnswersQuery,
   useGetCodeHistoryQuery,
-  useUpdateGradeMutation
+  useUpdateGradeMutation,
+  useGetQuestionHtmlSrcQuery
 } = graderApi;
 

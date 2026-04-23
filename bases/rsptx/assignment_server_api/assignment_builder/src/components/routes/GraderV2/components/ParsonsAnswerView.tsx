@@ -1,64 +1,39 @@
 /**
  * ParsonsAnswerView – renders student answers for Parsons problems.
  *
- * Shows each student's submitted block ordering with indentation,
- * along with an inline partial-credit editor.
+ * Shows each student in a table. Clicking a row opens a dialog with:
+ * - A standard Runestone exercise preview showing the student's answer.
+ * - An inline grade editor (points + comment + save).
  */
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Dialog } from "primereact/dialog";
 import { InputNumber } from "primereact/inputnumber";
 import { InputText } from "primereact/inputtext";
+import { ProgressSpinner } from "primereact/progressspinner";
 import { Tag } from "primereact/tag";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 
-import { ParsonsStudentAnswer, ParsonsStudentBlock, StudentAnswer } from "@/types/grader";
+import { useGetQuestionHtmlSrcQuery } from "@/store/grader/grader.logic.api";
+import { StudentAnswer } from "@/types/grader";
 
 import styles from "../GraderV2.module.css";
 
+import { StudentExercisePreview } from "./StudentExercisePreview";
+
 interface ParsonsAnswerViewProps {
   answers: StudentAnswer[];
+  /** The question name / div_id (e.g. "grader_parsons_swap") – used to fetch htmlsrc for preview. */
+  questionName: string;
+  /** Optional assignment id for resolving the correct question source. */
+  assignmentId?: number;
   onGradeUpdate: (answerId: number, points: number, comment: string) => void;
 }
 
-/**
- * Tries to parse blocks from the student's answer JSON.
- * Falls back to a single block with the raw answer text.
- */
-const parseBlocks = (answer: StudentAnswer): ParsonsStudentBlock[] => {
-  try {
-    const parsed = JSON.parse(answer.answer);
-
-    if (Array.isArray(parsed)) {
-      return parsed.map((b: { content?: string; indent?: number; text?: string }) => ({
-        content: b.content ?? b.text ?? String(b),
-        indent: b.indent ?? 0
-      }));
-    }
-  } catch {
-    // not JSON – fall through
-  }
-
-  return [{ content: answer.answer, indent: 0 }];
-};
-
-const BlockList: React.FC<{ blocks: ParsonsStudentBlock[] }> = ({ blocks }) => (
-  <div className={styles.parsonsBlockList}>
-    {blocks.map((block, idx) => (
-      <div
-        key={idx}
-        className={styles.parsonsBlock}
-        style={{ marginLeft: `${block.indent * 2}rem` }}
-      >
-        <span className={styles.parsonsBlockIndex}>{idx + 1}</span>
-        <span className={styles.parsonsBlockContent}>{block.content}</span>
-      </div>
-    ))}
-  </div>
-);
-
 export const ParsonsAnswerView: React.FC<ParsonsAnswerViewProps> = ({
   answers,
+  questionName,
+  assignmentId,
   onGradeUpdate
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState<StudentAnswer | null>(null);
@@ -66,13 +41,10 @@ export const ParsonsAnswerView: React.FC<ParsonsAnswerViewProps> = ({
   const [editPoints, setEditPoints] = useState<number>(0);
   const [editComment, setEditComment] = useState<string>("");
 
-  const enrichedAnswers: ParsonsStudentAnswer[] = useMemo(
-    () =>
-      answers.map((a) => ({
-        ...a,
-        blocks: parseBlocks(a)
-      })),
-    [answers]
+  // Fetch htmlsrc for the Runestone preview
+  const { data: htmlSrcData, isFetching: htmlSrcLoading } = useGetQuestionHtmlSrcQuery(
+    { acid: questionName, assignmentId },
+    { skip: !questionName }
   );
 
   const openDetail = (answer: StudentAnswer) => {
@@ -89,31 +61,10 @@ export const ParsonsAnswerView: React.FC<ParsonsAnswerViewProps> = ({
     }
   };
 
-  const blocksBodyTemplate = (rowData: ParsonsStudentAnswer) => {
-    const preview =
-      rowData.blocks.length > 0
-        ? rowData.blocks
-            .slice(0, 3)
-            .map((b) => b.content)
-            .join(" → ")
-        : "—";
-
-    return (
-      <span
-        style={{ cursor: "pointer", textDecoration: "underline dotted" }}
-        onClick={() => openDetail(rowData)}
-        title="Click to view full block layout"
-      >
-        {preview}
-        {rowData.blocks.length > 3 ? " …" : ""}
-      </span>
-    );
-  };
-
   return (
     <div>
       <DataTable
-        value={enrichedAnswers}
+        value={answers}
         paginator
         rows={20}
         dataKey="id"
@@ -122,13 +73,28 @@ export const ParsonsAnswerView: React.FC<ParsonsAnswerViewProps> = ({
         emptyMessage="No student answers found."
         stripedRows
         size="small"
+        selectionMode="single"
+        onRowSelect={(e) => openDetail(e.data as StudentAnswer)}
+        style={{ cursor: "pointer" }}
       >
         <Column field="sid" header="Student" sortable style={{ minWidth: "8rem" }} />
-        <Column header="Blocks" body={blocksBodyTemplate} style={{ minWidth: "16rem" }} />
+        <Column
+          field="answer"
+          header="Answer"
+          body={(row: StudentAnswer) => (
+            <span
+              style={{ maxWidth: "20rem", display: "inline-block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+              title={row.answer}
+            >
+              {row.answer}
+            </span>
+          )}
+          style={{ minWidth: "16rem" }}
+        />
         <Column
           field="correct"
           header="Auto-Grade"
-          body={(row: ParsonsStudentAnswer) =>
+          body={(row: StudentAnswer) =>
             row.correct ? (
               <Tag severity="success" value="Correct" />
             ) : (
@@ -141,29 +107,47 @@ export const ParsonsAnswerView: React.FC<ParsonsAnswerViewProps> = ({
         <Column
           field="points"
           header="Points"
-          body={(row: ParsonsStudentAnswer) => `${row.points} / ${row.maxPoints}`}
+          body={(row: StudentAnswer) => `${row.points} / ${row.maxPoints}`}
           sortable
           style={{ width: "8rem" }}
         />
       </DataTable>
 
-      {/* Detail dialog */}
+      {/* Detail dialog with Runestone preview */}
       <Dialog
         header={`Parsons Answer – ${selectedAnswer?.sid ?? ""}`}
         visible={dialogVisible}
-        style={{ width: "40rem" }}
+        style={{ width: "50rem", maxHeight: "90vh" }}
         onHide={() => setDialogVisible(false)}
+        contentStyle={{ overflow: "auto" }}
       >
         {selectedAnswer && (
           <>
-            <BlockList blocks={parseBlocks(selectedAnswer)} />
+            {/* Runestone exercise preview with student's answer */}
+            {htmlSrcLoading ? (
+              <div style={{ display: "flex", justifyContent: "center", padding: "2rem" }}>
+                <ProgressSpinner style={{ width: "3rem", height: "3rem" }} />
+              </div>
+            ) : htmlSrcData?.htmlsrc ? (
+              <StudentExercisePreview
+                htmlsrc={htmlSrcData.htmlsrc}
+                sid={selectedAnswer.sid}
+              />
+            ) : (
+              <p style={{ color: "#888", fontStyle: "italic" }}>
+                Preview not available for this question.
+              </p>
+            )}
 
+            {/* Grade editor */}
             <div
               style={{
                 display: "flex",
                 gap: "0.75rem",
                 alignItems: "end",
-                marginTop: "1.5rem"
+                marginTop: "1.5rem",
+                borderTop: "1px solid #dee2e6",
+                paddingTop: "1rem"
               }}
             >
               <div>
