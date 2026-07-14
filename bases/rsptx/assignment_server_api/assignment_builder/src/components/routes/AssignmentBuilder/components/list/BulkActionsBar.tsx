@@ -67,8 +67,8 @@ export const BulkActionsBar = ({
       title: "Delete assignments",
       children: (
         <Text size="sm">
-          Delete {selectedCount} selected {selectedCount === 1 ? "assignment" : "assignments"}?
-          This can&apos;t be undone.
+          Delete {selectedCount} selected {selectedCount === 1 ? "assignment" : "assignments"}? This
+          can&apos;t be undone.
         </Text>
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },

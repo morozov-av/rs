@@ -118,8 +118,10 @@ describe("getEnforceDueToastCopy", () => {
   });
 });
 
-const makeBulkTrigger = (result: { succeeded: number; failed: number }): BulkUpdateAssignmentsTrigger =>
-  vi.fn(() => ({ unwrap: () => Promise.resolve(result) }));
+const makeBulkTrigger = (result: {
+  succeeded: number;
+  failed: number;
+}): BulkUpdateAssignmentsTrigger => vi.fn(() => ({ unwrap: () => Promise.resolve(result) }));
 
 const makeRejectingBulkTrigger = (): BulkUpdateAssignmentsTrigger =>
   vi.fn(() => ({ unwrap: () => Promise.reject(new Error("bulk update failed")) }));
@@ -192,13 +194,15 @@ describe("saveBulkEnforceDue", () => {
     expect(trigger).toHaveBeenCalledWith(
       assignments.map((assignment) => ({ ...assignment, enforce_due: true }))
     );
-    expect(notify.success).toHaveBeenCalledWith(
-      "Late submissions not allowed for 2 assignments"
-    );
+    expect(notify.success).toHaveBeenCalledWith("Late submissions not allowed for 2 assignments");
   });
 
   it("toasts the allowed copy when enforce_due is turned off", async () => {
-    await saveBulkEnforceDue(makeBulkTrigger({ succeeded: 1, failed: 0 }), [makeAssignment()], false);
+    await saveBulkEnforceDue(
+      makeBulkTrigger({ succeeded: 1, failed: 0 }),
+      [makeAssignment()],
+      false
+    );
 
     expect(notify.success).toHaveBeenCalledWith("Late submissions allowed for 1 assignment");
   });
@@ -214,9 +218,9 @@ describe("saveBulkEnforceDue", () => {
 
 describe("bulk toast copy helpers", () => {
   it("describes bulk visibility per mode with singular and plural subjects", () => {
-    expect(getBulkVisibilityToastCopy(1, { visible: true, visible_on: null, hidden_on: null })).toBe(
-      "1 assignment now visible"
-    );
+    expect(
+      getBulkVisibilityToastCopy(1, { visible: true, visible_on: null, hidden_on: null })
+    ).toBe("1 assignment now visible");
     expect(
       getBulkVisibilityToastCopy(3, { visible: false, visible_on: null, hidden_on: null })
     ).toBe("3 assignments now hidden");
