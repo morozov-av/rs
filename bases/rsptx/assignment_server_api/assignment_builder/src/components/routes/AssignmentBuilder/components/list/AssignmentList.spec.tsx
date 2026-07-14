@@ -35,7 +35,10 @@ const baseProps = () => ({
   onDuplicate: vi.fn(),
   onEnforceDueChange: vi.fn(),
   onVisibilityChange: vi.fn(),
-  onRemove: vi.fn()
+  onRemove: vi.fn(),
+  onBulkVisibilityChange: vi.fn(),
+  onBulkEnforceDueChange: vi.fn(),
+  onBulkRemove: vi.fn()
 });
 
 describe("AssignmentList", () => {
@@ -103,9 +106,9 @@ describe("AssignmentList", () => {
     const bravoRow = screen.getByRole("button", { name: "Bravo" }).closest("tr")!;
     const cells = bravoRow.querySelectorAll("td");
 
-    fireEvent.click(cells[1]);
     fireEvent.click(cells[2]);
     fireEvent.click(cells[3]);
+    fireEvent.click(cells[4]);
 
     expect(props.onEdit).toHaveBeenCalledTimes(3);
     expect(props.onEdit).toHaveBeenCalledWith(ASSIGNMENTS[1]);
@@ -119,8 +122,9 @@ describe("AssignmentList", () => {
     const bravoRow = screen.getByRole("button", { name: "Bravo" }).closest("tr")!;
     const cells = bravoRow.querySelectorAll("td");
 
-    fireEvent.click(cells[5]);
-    fireEvent.click(cells[7]);
+    fireEvent.click(cells[0]);
+    fireEvent.click(cells[6]);
+    fireEvent.click(cells[8]);
 
     expect(props.onEdit).not.toHaveBeenCalled();
   });
@@ -186,5 +190,84 @@ describe("AssignmentList", () => {
     const rows = screen.getAllByRole("button", { name: /Alpha|Bravo|Charlie/ });
 
     expect(rows[0]).toHaveTextContent("Charlie");
+  });
+
+  it("hides the bulk actions bar until a row is selected", () => {
+    renderWithMantine(<AssignmentList {...baseProps()} />);
+
+    expect(screen.queryByRole("toolbar", { name: "Bulk actions" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Bravo" }));
+
+    expect(screen.getByRole("toolbar", { name: "Bulk actions" })).toBeInTheDocument();
+    expect(screen.getByText("1 selected")).toBeInTheDocument();
+  });
+
+  it("selects every row through the header checkbox", () => {
+    renderWithMantine(<AssignmentList {...baseProps()} />);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select all assignments" }));
+
+    expect(screen.getByText("3 selected")).toBeInTheDocument();
+  });
+
+  it("clears the selection from the bulk actions bar", () => {
+    renderWithMantine(<AssignmentList {...baseProps()} />);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select all assignments" }));
+    fireEvent.click(screen.getByRole("button", { name: "Clear selection" }));
+
+    expect(screen.queryByRole("toolbar", { name: "Bulk actions" })).not.toBeInTheDocument();
+  });
+
+  it("applies a bulk visibility change to the selected assignments and clears the selection", () => {
+    const props = baseProps();
+
+    renderWithMantine(<AssignmentList {...props} />);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Alpha" }));
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Bravo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Visibility" }));
+    fireEvent.click(screen.getByRole("button", { name: "Apply" }));
+
+    expect(props.onBulkVisibilityChange).toHaveBeenCalledWith([ASSIGNMENTS[0], ASSIGNMENTS[1]], {
+      visible: true,
+      visible_on: null,
+      hidden_on: null
+    });
+    expect(screen.queryByRole("toolbar", { name: "Bulk actions" })).not.toBeInTheDocument();
+  });
+
+  it("applies a bulk late-submissions change to the selected assignments", () => {
+    const props = baseProps();
+
+    renderWithMantine(<AssignmentList {...props} />);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select Charlie" }));
+    fireEvent.click(screen.getByRole("button", { name: "Late submissions" }));
+    fireEvent.click(screen.getByRole("menuitem", { name: "Don't allow late submissions" }));
+
+    expect(props.onBulkEnforceDueChange).toHaveBeenCalledWith([ASSIGNMENTS[2]], true);
+  });
+
+  it("confirms a bulk delete before calling onBulkRemove", async () => {
+    const props = baseProps();
+
+    renderWithMantine(<AssignmentList {...props} />);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "Select all assignments" }));
+
+    const toolbar = screen.getByRole("toolbar", { name: "Bulk actions" });
+
+    fireEvent.click(within(toolbar).getByRole("button", { name: "Delete" }));
+
+    expect(await screen.findByText("Delete assignments")).toBeInTheDocument();
+    expect(props.onBulkRemove).not.toHaveBeenCalled();
+
+    const dialog = screen.getByRole("dialog");
+
+    fireEvent.click(within(dialog).getByRole("button", { name: "Delete" }));
+
+    expect(props.onBulkRemove).toHaveBeenCalledWith(ASSIGNMENTS);
   });
 });

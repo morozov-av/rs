@@ -23,8 +23,16 @@ export const ASSIGNMENT_TOAST_COPY = {
   deleted: "Assignment deleted",
   deleteError: "Couldn't delete assignment. Try again.",
   duplicated: (name: string) => `Assignment duplicated as "${name}"`,
-  duplicateError: "Couldn't duplicate assignment. Try again."
+  duplicateError: "Couldn't duplicate assignment. Try again.",
+  bulkDeleted: (count: number) => `Deleted ${count} ${count === 1 ? "assignment" : "assignments"}`,
+  bulkDeleteError: (count: number) =>
+    `Couldn't delete ${count} ${count === 1 ? "assignment" : "assignments"}. Try again.`
 } as const;
+
+export interface BulkActionResult {
+  succeeded: number;
+  failed: number;
+}
 
 export const assignmentApi = createApi({
   reducerPath: "assignmentAPI",
@@ -163,6 +171,63 @@ export const assignmentApi = createApi({
           });
       }
     }),
+    bulkUpdateAssignments: build.mutation<BulkActionResult, Assignment[]>({
+      queryFn: async (assignments, _api, _extraOptions, fetchWithBQ) => {
+        const results = await Promise.all(
+          assignments.map((assignment) =>
+            fetchWithBQ({
+              method: "PUT",
+              url: `/assignment/instructor/assignments/${assignment.id}`,
+              body: assignment
+            })
+          )
+        );
+        const failed = results.filter((result) => result.error).length;
+
+        return { data: { succeeded: assignments.length - failed, failed } };
+      },
+      invalidatesTags: (result) => {
+        if (result && result.succeeded > 0) {
+          return [{ type: "Assignments" }, { type: "Assignment" }];
+        }
+        return [];
+      }
+    }),
+    bulkRemoveAssignments: build.mutation<BulkActionResult, Assignment[]>({
+      queryFn: async (assignments, _api, _extraOptions, fetchWithBQ) => {
+        const results = await Promise.all(
+          assignments.map((assignment) =>
+            fetchWithBQ({
+              method: "DELETE",
+              url: `/assignment/instructor/assignments/${assignment.id}`
+            })
+          )
+        );
+        const failed = results.filter((result) => result.error).length;
+
+        return { data: { succeeded: assignments.length - failed, failed } };
+      },
+      invalidatesTags: (result) => {
+        if (result && result.succeeded > 0) {
+          return [{ type: "Assignments" }];
+        }
+        return [];
+      },
+      onQueryStarted: (_, { queryFulfilled }) => {
+        queryFulfilled
+          .then(({ data }) => {
+            if (data.succeeded > 0) {
+              notify.success(ASSIGNMENT_TOAST_COPY.bulkDeleted(data.succeeded));
+            }
+            if (data.failed > 0) {
+              notify.error(ASSIGNMENT_TOAST_COPY.bulkDeleteError(data.failed));
+            }
+          })
+          .catch(() => {
+            notify.error(ASSIGNMENT_TOAST_COPY.deleteError);
+          });
+      }
+    }),
     duplicateAssignment: build.mutation<DetailResponse<{ id: number; name: string }>, number>({
       query: (assignmentId) => ({
         method: "POST",
@@ -193,5 +258,7 @@ export const {
   useUpdateAssignmentMutation,
   useCreateAssignmentMutation,
   useRemoveAssignmentMutation,
-  useDuplicateAssignmentMutation
+  useDuplicateAssignmentMutation,
+  useBulkUpdateAssignmentsMutation,
+  useBulkRemoveAssignmentsMutation
 } = assignmentApi;
