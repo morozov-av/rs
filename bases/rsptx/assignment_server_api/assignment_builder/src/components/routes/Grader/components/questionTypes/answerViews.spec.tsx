@@ -3,6 +3,7 @@ import { renderWithMantine, screen } from "@/test/renderWithMantine";
 import { ActiveCodeAnswerView } from "./ActiveCodeAnswerView";
 import { DefaultAnswerView } from "./DefaultAnswerView";
 import { FitbAnswerView } from "./FitbAnswerView";
+import { IframeAnswerView } from "./IframeAnswerView";
 import { McqAnswerView } from "./McqAnswerView";
 import { ParsonsAnswerView } from "./ParsonsAnswerView";
 import { ShortAnswerView } from "./ShortAnswerView";
@@ -133,6 +134,39 @@ describe("ActiveCodeAnswerView", () => {
     renderWithMantine(<ActiveCodeAnswerView {...baseProps({ answer: "" })} />);
 
     expect(screen.getByText("(empty)")).toBeInTheDocument();
+  });
+});
+
+describe("IframeAnswerView", () => {
+  it("injects the iframe htmlsrc and shows the raw answer", () => {
+    const { container } = renderWithMantine(
+      <IframeAnswerView
+        {...baseProps({
+          htmlsrc: '<div><iframe src="/books/published/x/q.html" title="embed"></iframe></div>',
+          answer: "42",
+          questionName: "ww-1"
+        })}
+      />
+    );
+
+    expect(container.querySelector("iframe")).not.toBeNull();
+    expect(screen.getByText("ww-1")).toBeInTheDocument();
+    expect(screen.getByText("Student answer")).toBeInTheDocument();
+    expect(screen.getByText("42")).toBeInTheDocument();
+  });
+
+  it("renders an empty marker for a blank answer", () => {
+    renderWithMantine(
+      <IframeAnswerView {...baseProps({ htmlsrc: "<iframe src='/x'></iframe>", answer: "" })} />
+    );
+
+    expect(screen.getByText("(empty)")).toBeInTheDocument();
+  });
+
+  it("shows a fallback note when htmlsrc is missing", () => {
+    renderWithMantine(<IframeAnswerView {...baseProps({ answer: "a" })} />);
+
+    expect(screen.getByText("(question preview not available)")).toBeInTheDocument();
   });
 });
 

@@ -31,7 +31,8 @@ export async function renderRunestoneComponent(
   }
 
   // figure out what kind of component we are dealing with
-  let componentKind = previewRef.current.querySelector("[data-component]").dataset.component;
+  let componentEl = previewRef.current.querySelector("[data-component]");
+  let componentKind = componentEl ? componentEl.dataset.component : null;
   // webwork problems do not have a data-component attribute so we have to try to figure it out.
   //
 
@@ -45,7 +46,7 @@ export async function renderRunestoneComponent(
   await window.runestoneComponents.runestone_import(componentKind);
   let opt = {};
 
-  opt.orig = previewRef.current.querySelector("[data-component]");
+  opt.orig = componentEl;
   if (opt.orig) {
     opt.lang = opt.orig.dataset.lang;
     if (!opt.lang) {
@@ -55,15 +56,13 @@ export async function renderRunestoneComponent(
         opt.lang = langData.dataset.lang;
       }
     }
-    // We don't want to store runs or keep results so set useServices to fales
-    opt.useRunestoneServices = false;
-    opt.graderactive = false;
-    opt.python3 = true;
-    if (typeof moreOpts !== "undefined") {
-      for (let key in moreOpts) {
-        opt[key] = moreOpts[key];
-      }
-    }
+  }
+  // We don't want to store runs or keep results so set useServices to fales
+  opt.useRunestoneServices = false;
+  opt.graderactive = false;
+  opt.python3 = true;
+  for (let key in moreOpts) {
+    opt[key] = moreOpts[key];
   }
 
   // loading a valid component will also initialize the component factory

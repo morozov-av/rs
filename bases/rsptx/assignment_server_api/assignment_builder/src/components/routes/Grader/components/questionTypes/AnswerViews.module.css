@@ -131,6 +131,18 @@
   color: var(--rs-warning-text);
 }
 
+.iframePreview {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.iframePreview iframe {
+  width: 100%;
+  min-height: 480px;
+  border: 1px solid var(--rs-border-solid);
+  border-radius: var(--rs-radius-md);
+}
+
 .codeBlock {
   background: var(--rs-neutral-900);
   color: var(--rs-neutral-200);

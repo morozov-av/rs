@@ -4,6 +4,7 @@ import { ActiveCodeAnswerView } from "./ActiveCodeAnswerView";
 import styles from "./AnswerViews.module.css";
 import { DefaultAnswerView } from "./DefaultAnswerView";
 import { FitbAnswerView } from "./FitbAnswerView";
+import { IframeAnswerView } from "./IframeAnswerView";
 import { McqAnswerView } from "./McqAnswerView";
 import { ParsonsAnswerView } from "./ParsonsAnswerView";
 import { RunestoneGraderPreview } from "./RunestoneGraderPreview";
@@ -27,8 +28,15 @@ const RUNESTONE_GRADER_TYPES = new Set([
   "selectquestion"
 ]);
 
+const IFRAME_GRADER_TYPES = new Set(["doenet", "splice"]);
+
 export const AnswerRenderer: React.FC<AnswerRendererProps & { questionType: string }> = (props) => {
   const { questionType, htmlsrc, questionName, sid, history, activeAttemptIndex } = props;
+
+  const isIframeQuestion =
+    !!htmlsrc &&
+    !RUNESTONE_GRADER_TYPES.has(questionType) &&
+    (IFRAME_GRADER_TYPES.has(questionType) || htmlsrc.includes("<iframe"));
 
   const hasIndex = typeof activeAttemptIndex === "number" && activeAttemptIndex >= 0;
   const isLatestAttempt = hasIndex && activeAttemptIndex === history.length - 1;
@@ -53,6 +61,8 @@ export const AnswerRenderer: React.FC<AnswerRendererProps & { questionType: stri
     ) : null;
 
   if (interactive) return <>{interactive}</>;
+
+  if (isIframeQuestion) return <IframeAnswerView {...props} />;
 
   switch (questionType) {
     case "mchoice":
