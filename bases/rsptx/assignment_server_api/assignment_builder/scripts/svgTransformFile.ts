@@ -5,7 +5,7 @@ import path from "path";
 export default (filename: string) => {
   const assetFilename = JSON.stringify(path.basename(filename));
   const pascalCaseFilename = camelcase(path.parse(filename).name, {
-    pascalCase: true,
+    pascalCase: true
   });
   const componentName = `Svg${pascalCaseFilename}`;
 
@@ -22,6 +22,6 @@ export default (filename: string) => {
           })
         };
       });
-    `,
+    `
   };
 };

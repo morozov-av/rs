@@ -5,7 +5,6 @@ import { ReactNode, RefCallback, useMemo, useState } from "react";
 import { SelectedKey, TreeNode } from "@/types/treeNode";
 
 import { Icon } from "./Icon";
-
 import styles from "./TreeTable.module.css";
 
 export interface TreeTableColumn {
@@ -71,7 +70,11 @@ export const TreeTable = ({
     setExpanded((prev) => {
       const next = new Set(prev);
 
-      next.has(key) ? next.delete(key) : next.add(key);
+      if (next.has(key)) {
+        next.delete(key);
+      } else {
+        next.add(key);
+      }
       return next;
     });
   };

@@ -10,21 +10,21 @@ import {
   Table,
   Text
 } from "@mantine/core";
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-
-import { Icon } from "@/components/ui/Icon";
-import { notify } from "@/components/ui/notify";
+import {
+  useGetStudentAssignmentScoresQuery,
+  useRegradeMutation
+} from "@store/grader/grader.logic.api";
 import type {
   GradebookAssignment,
   GradebookStudent,
   RegradeReport,
   StudentAssignmentQuestionScore
 } from "@store/grader/grader.logic.api";
-import {
-  useGetStudentAssignmentScoresQuery,
-  useRegradeMutation
-} from "@store/grader/grader.logic.api";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+import { Icon } from "@/components/ui/Icon";
+import { notify } from "@/components/ui/notify";
 
 import styles from "../Grader.module.css";
 import { formatScore, isTotalStale, questionScoreSum } from "../state/gradebookSelectors";

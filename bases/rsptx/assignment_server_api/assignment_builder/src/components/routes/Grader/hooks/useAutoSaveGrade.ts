@@ -1,7 +1,6 @@
+import { useSaveGradeMutation } from "@store/grader/grader.logic.api";
 import debounce from "lodash/debounce";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-import { useSaveGradeMutation } from "@store/grader/grader.logic.api";
 
 import { useGraderTourContext } from "../tour/GraderTourContext";
 
@@ -78,6 +77,7 @@ export const useAutoSaveGrade = (args: Args): Result => {
     score: initialScore,
     comment: initialComment
   });
+
   useEffect(() => {
     sidRef.current = sid;
     setScoreState(initialScore);
@@ -85,20 +85,23 @@ export const useAutoSaveGrade = (args: Args): Result => {
     setStatus("idle");
     setErrorMessage(undefined);
     lastSavedRef.current = { score: initialScore, comment: initialComment };
-  }, [sid]);
+  }, [sid, initialComment, initialScore]);
 
   const valuesRef = useRef({ score, comment });
+
   useEffect(() => {
     valuesRef.current = { score, comment };
   }, [score, comment]);
 
   const onSavedRef = useRef(onSaved);
+
   useEffect(() => {
     onSavedRef.current = onSaved;
   }, [onSaved]);
 
   const persist = useCallback(async () => {
     const targetSid = sidRef.current;
+
     if (!targetSid) return;
     const { score: s, comment: c } = valuesRef.current;
     const prev = lastSavedRef.current;
@@ -125,6 +128,7 @@ export const useAutoSaveGrade = (args: Args): Result => {
       setLastSavedAt(Date.now());
       setErrorMessage(undefined);
       const previous = { ...prev };
+
       lastSavedRef.current = { score: s, comment: c };
       onSavedRef.current?.({
         sid: targetSid,
@@ -135,6 +139,7 @@ export const useAutoSaveGrade = (args: Args): Result => {
       });
     } catch (e: unknown) {
       const err = e as { data?: { detail?: string }; message?: string } | undefined;
+
       setStatus("error");
       setErrorMessage(err?.data?.detail || err?.message || "Save failed");
     }
@@ -150,6 +155,7 @@ export const useAutoSaveGrade = (args: Args): Result => {
     const t = setTimeout(() => {
       setStatus((s) => (s === "saved" ? "idle" : s));
     }, SAVED_VISIBLE_MS);
+
     return () => clearTimeout(t);
   }, [status, lastSavedAt]);
 
@@ -158,6 +164,7 @@ export const useAutoSaveGrade = (args: Args): Result => {
   const setScore = useCallback(
     (n: number) => {
       const clamped = Math.max(0, Math.min(maxPoints, isFinite(n) ? n : 0));
+
       setScoreState(clamped);
       setStatus("dirty");
       debounced();
@@ -206,6 +213,7 @@ export const useAutoSaveGrade = (args: Args): Result => {
         e.returnValue = "";
       }
     };
+
     window.addEventListener("beforeunload", handler);
     return () => window.removeEventListener("beforeunload", handler);
   }, [status]);

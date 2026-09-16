@@ -1,8 +1,11 @@
-import { renderHook, act } from "@testing-library/react";
-import { Provider } from "react-redux";
-import { configureStore } from "@reduxjs/toolkit";
 import { createElement } from "react";
+import { Provider } from "react-redux";
+
+import { renderHook, act } from "@testing-library/react";
+
+import { configureStore } from "@reduxjs/toolkit";
 import { assignmentExerciseSlice } from "@store/assignmentExercise/assignmentExercise.logic";
+
 import { useUpdateExercises } from "./useUpdateExercises";
 
 vi.mock("@store/assignmentExercise/assignmentExercise.logic.api", () => ({
@@ -140,6 +143,7 @@ describe("useUpdateExercises", () => {
 
     expect(mockUpdateExercises).toHaveBeenCalledOnce();
     const calledWith = mockUpdateExercises.mock.calls[0][0];
+
     expect(calledWith).toHaveLength(1);
     expect(calledWith[0].points).toBe(20);
     expect(calledWith[0].id).toBe(1);
@@ -160,6 +164,7 @@ describe("useUpdateExercises", () => {
     });
 
     const calledWith = mockUpdateExercises.mock.calls[0][0];
+
     expect(typeof calledWith[0].question_json).toBe("string");
     expect(calledWith[0].question_json).toBe(JSON.stringify({ statement: "Parsed object" }));
   });
@@ -203,6 +208,7 @@ describe("useUpdateExercises", () => {
     });
 
     const calledWith = mockUpdateExercises.mock.calls[0][0];
+
     expect(calledWith[0].autograde).toBe("pct_correct");
   });
 
@@ -217,6 +223,7 @@ describe("useUpdateExercises", () => {
     });
 
     const calledWith = mockUpdateExercises.mock.calls[0][0];
+
     expect(calledWith[0].which_to_grade).toBe("first_answer");
   });
 
@@ -231,6 +238,7 @@ describe("useUpdateExercises", () => {
     });
 
     const calledWith = mockUpdateExercises.mock.calls[0][0];
+
     expect(calledWith[0].activities_required).toBe(3);
   });
 
@@ -246,6 +254,7 @@ describe("useUpdateExercises", () => {
 
     const calledWith = mockUpdateExercises.mock.calls[0][0];
     const updated = calledWith[0];
+
     expect(updated.id).toBe(mockExercise.id);
     expect(updated.assignment_id).toBe(mockExercise.assignment_id);
     expect(updated.name).toBe(mockExercise.name);

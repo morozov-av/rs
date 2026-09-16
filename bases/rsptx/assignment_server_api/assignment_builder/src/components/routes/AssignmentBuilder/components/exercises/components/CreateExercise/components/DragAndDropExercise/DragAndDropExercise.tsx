@@ -26,13 +26,13 @@ import { DEFAULT_INCORRECT_FEEDBACK, buildQuestionJson } from "@/utils/questionJ
 
 import { DRAG_AND_DROP_STEP_VALIDATORS } from "../../config/stepConfigs";
 import { useBaseExercise } from "../../hooks/useBaseExercise";
+import { useExerciseStepNavigation } from "../../hooks/useExerciseStepNavigation";
+import { ExerciseLayout } from "../../shared/ExerciseLayout";
 import {
   ConnectionList,
   connectionExistsBetween,
   makeConnectionLabelResolver
 } from "../../shared/connections";
-import { useExerciseStepNavigation } from "../../hooks/useExerciseStepNavigation";
-import { ExerciseLayout } from "../../shared/ExerciseLayout";
 import { ExerciseComponentProps } from "../../types/ExerciseTypes";
 import { validateCommonFields } from "../../utils/validation";
 

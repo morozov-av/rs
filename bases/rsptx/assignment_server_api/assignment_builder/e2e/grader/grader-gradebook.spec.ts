@@ -24,6 +24,7 @@ const fetchGradebook = async (request: APIRequestContext): Promise<GradebookPayl
 
   expect(response.ok()).toBe(true);
   const body = (await response.json()) as { detail: GradebookPayload };
+
   return body.detail;
 };
 
@@ -54,12 +55,14 @@ test(
         { id: assignmentId, name: assignmentName },
         { name: divId }
       );
+
       expect(question.id).toBeGreaterThan(0);
 
       await setAssignmentVisible(page, assignmentName);
       await answerMchoiceInBook(book.page, { assignmentId, divId, correct: true });
 
       const gradebook = await fetchGradebook(page.request);
+
       expect(
         gradebook.assignments.some((a) => a.name === assignmentName),
         "scratch assignment missing from the gradebook matrix"
@@ -105,17 +108,22 @@ test(
       }
 
       const exportLink = page.getByRole("link", { name: /export csv/i });
+
       await expect(exportLink).toBeVisible();
 
       const downloadPromise = page.waitForEvent("download");
+
       await exportLink.click();
       const download = await downloadPromise;
+
       expect(download.suggestedFilename()).toContain(".csv");
 
       const csv = await page.request.get("/assignment/instructor/grader/gradebook.csv");
+
       expect(csv.ok()).toBe(true);
       expect(csv.headers()["content-type"]).toContain("text/csv");
       const firstLine = (await csv.text()).split("\n")[0];
+
       expect(firstLine).toContain("Student");
       expect(firstLine).toContain("Total");
     } finally {

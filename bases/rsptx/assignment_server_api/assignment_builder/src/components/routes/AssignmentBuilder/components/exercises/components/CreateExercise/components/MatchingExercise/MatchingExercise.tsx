@@ -26,14 +26,14 @@ import { DEFAULT_INCORRECT_FEEDBACK, buildQuestionJson } from "@/utils/questionJ
 
 import { MATCHING_STEP_VALIDATORS } from "../../config/stepConfigs";
 import { useBaseExercise } from "../../hooks/useBaseExercise";
+import { useExerciseStepNavigation } from "../../hooks/useExerciseStepNavigation";
+import { ExerciseLayout } from "../../shared/ExerciseLayout";
 import {
   ConnectionList,
   blockSide,
   connectionExistsBetween,
   makeConnectionLabelResolver
 } from "../../shared/connections";
-import { useExerciseStepNavigation } from "../../hooks/useExerciseStepNavigation";
-import { ExerciseLayout } from "../../shared/ExerciseLayout";
 import { ExerciseComponentProps } from "../../types/ExerciseTypes";
 import { validateCommonFields } from "../../utils/validation";
 
@@ -379,7 +379,8 @@ export const MatchingExercise: FC<ExerciseComponentProps> = ({
   const renderActiveLine = useCallback(() => {
     if (!activeSource || !hasMovedEnough) return null;
 
-    const isLeftSource = blockSide(formData.left || [], formData.right || [], activeSource) === "left";
+    const isLeftSource =
+      blockSide(formData.left || [], formData.right || [], activeSource) === "left";
     const sourcePosition = getBlockPosition(activeSource, isLeftSource);
 
     if (!sourcePosition) return null;
@@ -395,7 +396,15 @@ export const MatchingExercise: FC<ExerciseComponentProps> = ({
         className={styles.activePath}
       />
     );
-  }, [activeSource, hasMovedEnough, formData.left, formData.right, getBlockPosition, generatePath, mousePosition]);
+  }, [
+    activeSource,
+    hasMovedEnough,
+    formData.left,
+    formData.right,
+    getBlockPosition,
+    generatePath,
+    mousePosition
+  ]);
 
   useEffect(() => {
     if (activeStep === 1) {

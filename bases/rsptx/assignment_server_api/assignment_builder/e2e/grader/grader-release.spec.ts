@@ -58,6 +58,7 @@ test(
         { id: assignmentId, name: assignmentName },
         { name: divId }
       );
+
       expect(question.id).toBeGreaterThan(0);
 
       await setAssignmentVisible(page, assignmentName);
@@ -81,6 +82,7 @@ test(
       const flip = async (target: boolean) => {
         await toggleControl.click();
         const dialog = page.getByRole("dialog");
+
         await dialog.getByRole("button", { name: target ? "Release" : "Hide" }).click();
         await expect(dialog).toBeHidden();
         await expect(toggle).toBeChecked({ checked: target });

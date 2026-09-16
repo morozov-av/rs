@@ -76,6 +76,7 @@ test(
         { id: assignmentId, name: assignmentName },
         { name: divId, points: QUESTION_POINTS }
       );
+
       expect(question.id).toBeGreaterThan(0);
 
       await setAssignmentVisible(page, assignmentName);
@@ -84,6 +85,7 @@ test(
       const gradeResponse = await page.request.post("/assignment/instructor/grader/grade", {
         data: { sid, div_id: divId, score: GRADED_SCORE, comment: "" }
       });
+
       expect(gradeResponse.ok()).toBe(true);
 
       await recompute(page.request, assignmentId, sid);
@@ -94,6 +96,7 @@ test(
       await page.waitForURL(new RegExp(`/grader/${assignmentId}$`));
 
       const thresholdButton = page.getByRole("button", { name: "Threshold", exact: true });
+
       await thresholdButton.waitFor({ state: "visible", timeout: 30_000 });
       await thresholdButton.click();
 
@@ -104,6 +107,7 @@ test(
       const setThresholdResponse = page.waitForResponse(
         (r) => r.url().includes("/grader/threshold") && r.request().method() === "POST"
       );
+
       await modal.getByRole("button", { name: "Set threshold" }).click();
       await setThresholdResponse;
       await expect(modal).toBeHidden();
@@ -115,6 +119,7 @@ test(
       const clearThresholdResponse = page.waitForResponse(
         (r) => r.url().includes("/grader/threshold") && r.request().method() === "POST"
       );
+
       await page.getByRole("button", { name: "Clear" }).click();
       await clearThresholdResponse;
 

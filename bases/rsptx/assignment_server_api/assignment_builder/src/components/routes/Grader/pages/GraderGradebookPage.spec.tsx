@@ -83,7 +83,7 @@ describe("GraderGradebookPage", () => {
     expect(table.getByText("Class average")).toBeInTheDocument();
   });
 
-  it("labels each row \"Last, First\" so the last-name order the rows arrive in reads as an order", () => {
+  it('labels each row "Last, First" so the last-name order the rows arrive in reads as an order', () => {
     mockUseGetGradebookQuery.mockReturnValue({
       data: {
         ...matrix,

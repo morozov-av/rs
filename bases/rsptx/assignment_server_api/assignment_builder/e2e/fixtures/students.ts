@@ -23,6 +23,7 @@ const STUDENT_SETUP_HINT =
 
 const extractFormkey = (html: string): string => {
   const match = html.match(/name="_formkey"[^>]*value="([^"]+)"/);
+
   if (!match) {
     throw new Error(`Login form has no _formkey. ${STUDENT_SETUP_HINT}`);
   }

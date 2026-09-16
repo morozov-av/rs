@@ -1,16 +1,24 @@
 import { Slider } from "@mantine/core";
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from "react";
-
-import { Icon } from "@/components/ui/Icon";
 import {
   GraderAnswerHistoryItem,
   GraderStudentAnswer,
   useGetGraderHistoryQuery
 } from "@store/grader/grader.logic.api";
+import React, {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState
+} from "react";
+
+import { Icon } from "@/components/ui/Icon";
 
 import styles from "../Grader.module.css";
-import { getDemoHistoryFor } from "../tour/graderDemoData";
 import { useGraderTourContext } from "../tour/GraderTourContext";
+import { getDemoHistoryFor } from "../tour/graderDemoData";
+
 import { AnswerRenderer } from "./questionTypes/AnswerRenderer";
 import { CorrectChipKind, correctChipKind, formatAnswer } from "./submissionPaneHelpers";
 
@@ -39,6 +47,7 @@ const correctChip = (
   h: Pick<GraderAnswerHistoryItem, "correct" | "percent">
 ): { label: string; cls: string } | null => {
   const kind = correctChipKind(h);
+
   return kind ? { label: kind, cls: CHIP_CLASS[kind] } : null;
 };
 
@@ -52,9 +61,10 @@ export const SubmissionPane = forwardRef<SubmissionPaneHandle, Props>(function S
     { skip: isDemo }
   );
 
-  const history: GraderAnswerHistoryItem[] = isDemo
-    ? getDemoHistoryFor(student.sid).history
-    : (historyData?.history ?? []);
+  const history = useMemo<GraderAnswerHistoryItem[]>(
+    () => (isDemo ? getDemoHistoryFor(student.sid).history : (historyData?.history ?? [])),
+    [historyData?.history, isDemo, student.sid]
+  );
 
   const [activeAttempt, setActiveAttempt] = useState<number>(-1);
 
@@ -72,8 +82,11 @@ export const SubmissionPane = forwardRef<SubmissionPaneHandle, Props>(function S
   const totalAttempts = history.length;
   const isLatest = activeAttempt === totalAttempts - 1;
 
-  const goPrevAttempt = () => setActiveAttempt((i) => Math.max(0, i - 1));
-  const goNextAttempt = () => setActiveAttempt((i) => Math.min(totalAttempts - 1, i + 1));
+  const goPrevAttempt = useCallback(() => setActiveAttempt((i) => Math.max(0, i - 1)), []);
+  const goNextAttempt = useCallback(
+    () => setActiveAttempt((i) => Math.min(totalAttempts - 1, i + 1)),
+    [totalAttempts]
+  );
 
   useImperativeHandle(
     ref,
@@ -82,7 +95,7 @@ export const SubmissionPane = forwardRef<SubmissionPaneHandle, Props>(function S
       nextAttempt: goNextAttempt
     }),
 
-    [totalAttempts]
+    [goNextAttempt, goPrevAttempt]
   );
 
   return (
@@ -163,6 +176,7 @@ export const SubmissionPane = forwardRef<SubmissionPaneHandle, Props>(function S
               const c = correctChip(h);
               const active = idx === activeAttempt;
               const raw = formatAnswer(h.answer);
+
               return (
                 <button
                   type="button"

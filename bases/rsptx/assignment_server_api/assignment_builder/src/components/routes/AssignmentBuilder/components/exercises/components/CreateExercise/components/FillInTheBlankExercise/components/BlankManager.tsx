@@ -53,7 +53,7 @@ export const BlankManager: FC<BlankManagerProps> = ({ blanks, onChange, question
 
       onChange(trimmedBlanks);
     }
-  }, [blankCount, blanks.length]);
+  }, [blankCount, blanks, hasExtraBlanks, hasMissingBlanks, onChange]);
 
   const updateBlank = (
     index: number,

@@ -22,7 +22,7 @@ export const RegexEditor: FC<RegexEditorProps> = ({ value, onChange }) => {
 
   useEffect(() => {
     setInput(value || "");
-  }, []);
+  }, [value]);
 
   useEffect(() => {
     const validateWithoutChangingState = () => {
@@ -57,7 +57,7 @@ export const RegexEditor: FC<RegexEditorProps> = ({ value, onChange }) => {
     onChange(input);
 
     validateWithoutChangingState();
-  }, [input]);
+  }, [flags, input, onChange]);
 
   const testRegex = () => {
     if (!input.trim() || !testText) {

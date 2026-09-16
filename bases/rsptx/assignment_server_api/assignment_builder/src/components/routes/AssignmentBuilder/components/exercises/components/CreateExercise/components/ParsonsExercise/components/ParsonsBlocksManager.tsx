@@ -527,7 +527,7 @@ export const ParsonsBlocksManager: FC<ParsonsBlocksManagerProps> = ({
     (id: string, isCorrect: boolean) => {
       if (!isCorrect) return;
 
-      const block = blocks.find((block) => block.id === id);
+      const block = blocks.find((candidate) => candidate.id === id);
 
       if (!block || !block.groupId) return;
 
@@ -602,6 +602,7 @@ export const ParsonsBlocksManager: FC<ParsonsBlocksManagerProps> = ({
         }
         return block;
       });
+
       onChange(newBlocks);
     },
     [blocks, onChange]
@@ -615,6 +616,7 @@ export const ParsonsBlocksManager: FC<ParsonsBlocksManagerProps> = ({
         }
         return block;
       });
+
       onChange(newBlocks);
     },
     [blocks, onChange]
@@ -628,6 +630,7 @@ export const ParsonsBlocksManager: FC<ParsonsBlocksManagerProps> = ({
         }
         return block;
       });
+
       onChange(newBlocks);
     },
     [blocks, onChange]
@@ -641,6 +644,7 @@ export const ParsonsBlocksManager: FC<ParsonsBlocksManagerProps> = ({
         }
         return block;
       });
+
       onChange(newBlocks);
     },
     [blocks, onChange]
@@ -654,6 +658,7 @@ export const ParsonsBlocksManager: FC<ParsonsBlocksManagerProps> = ({
         }
         return block;
       });
+
       onChange(newBlocks);
     },
     [blocks, onChange]
@@ -667,6 +672,7 @@ export const ParsonsBlocksManager: FC<ParsonsBlocksManagerProps> = ({
         }
         return block;
       });
+
       onChange(newBlocks);
     },
     [blocks, onChange]
@@ -680,11 +686,13 @@ export const ParsonsBlocksManager: FC<ParsonsBlocksManagerProps> = ({
     const map: Record<string, number> = {};
     let idx = 0;
     const processedGroups = new Set<string>();
+
     blocks.forEach((block) => {
       if (block.groupId) {
         if (!processedGroups.has(block.groupId)) {
           processedGroups.add(block.groupId);
           const groupBlocks = blocks.filter((b) => b.groupId === block.groupId);
+
           groupBlocks.forEach((b) => {
             map[b.id] = idx;
           });

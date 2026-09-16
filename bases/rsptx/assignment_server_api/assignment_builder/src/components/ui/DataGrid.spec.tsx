@@ -1,5 +1,6 @@
-import { ColumnDef } from "@tanstack/react-table";
 import React from "react";
+
+import { ColumnDef } from "@tanstack/react-table";
 import { describe, expect, it, vi } from "vitest";
 
 import { renderWithMantine, screen, fireEvent } from "@/test/renderWithMantine";
@@ -43,6 +44,7 @@ describe("DataGrid", () => {
 
   it("renders a loader while loading", () => {
     const { container } = renderGrid({ loading: true });
+
     expect(container.querySelector(".mantine-Loader-root")).toBeTruthy();
     expect(screen.queryByText("Alpha")).not.toBeInTheDocument();
   });
@@ -56,6 +58,7 @@ describe("DataGrid", () => {
 
   it("invokes onRowClick with the clicked row", () => {
     const onRowClick = vi.fn();
+
     renderGrid({ onRowClick });
     fireEvent.click(screen.getByText("Bravo"));
     expect(onRowClick).toHaveBeenCalledWith(ROWS[1]);
@@ -245,6 +248,7 @@ describe("DataGrid column filters", () => {
     const { rerender } = renderWithMantine(
       <DataGrid<Row> data={ROWS} columns={FILTER_COLUMNS} getRowId={(r) => r.id} />
     );
+
     expect(screen.queryByPlaceholderText("filter-name")).not.toBeInTheDocument();
 
     rerender(
@@ -297,6 +301,7 @@ describe("DataGrid column filters", () => {
       },
       { accessorKey: "score", header: "Score" }
     ];
+
     renderWithMantine(
       <DataGrid<Row> data={ROWS} columns={columns} getRowId={(r) => r.id} enableColumnFilters />
     );
@@ -314,6 +319,7 @@ describe("DataGrid column filters", () => {
   it("orders rows according to controlled descending sorting", () => {
     renderGrid({ sorting: [{ id: "score", desc: true }] });
     const cells = screen.getAllByText(/Alpha|Bravo|Charlie/).map((el) => el.textContent);
+
     expect(cells[0]).toBe("Alpha");
     expect(cells[2]).toBe("Bravo");
   });

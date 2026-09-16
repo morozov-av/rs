@@ -1,18 +1,19 @@
 import { Button, Center, Loader } from "@mantine/core";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-
-import { Icon } from "@/components/ui/Icon";
-import { notify } from "@/components/ui/notify";
 import {
   GraderStudentAnswer,
   useGetGraderAnswersQuery,
   useGetGraderQuestionsQuery,
   useSaveGradeMutation
 } from "@store/grader/grader.logic.api";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { GradePanel, GradePanelHandle } from "../components/GradePanel";
+import { Icon } from "@/components/ui/Icon";
+import { notify } from "@/components/ui/notify";
+
+import styles from "../Grader.module.css";
 import { DeadlineExceptionDialog } from "../components/DeadlineExceptionDialog";
+import { GradePanel, GradePanelHandle } from "../components/GradePanel";
 import { RegradeWizard } from "../components/RegradeWizard";
 import { ShortcutsHelpDialog } from "../components/ShortcutsHelpDialog";
 import { StudentListSidebar } from "../components/StudentListSidebar";
@@ -22,10 +23,9 @@ import { useGraderHotkeys } from "../hooks/useGraderHotkeys";
 import { useGraderPrefs } from "../hooks/useGraderPrefs";
 import { usePlatform } from "../hooks/usePlatform";
 import { useStudentNavigation } from "../hooks/useStudentNavigation";
-import styles from "../Grader.module.css";
 import { studentDisplayName } from "../state/graderSelectors";
-import { getDemoAnswersFor, getDemoQuestionsFor } from "../tour/graderDemoData";
 import { useGraderTourContext } from "../tour/GraderTourContext";
+import { getDemoAnswersFor, getDemoQuestionsFor } from "../tour/graderDemoData";
 
 export const GraderQuestionPage: React.FC = () => {
   const { assignmentId, questionId, sid } = useParams();
@@ -48,7 +48,10 @@ export const GraderQuestionPage: React.FC = () => {
   const qData = isDemo ? (getDemoQuestionsFor(aid) ?? undefined) : qRealData;
   const questionMeta = qData?.questions.find((q) => q.id === qid);
 
-  const answers: ReadonlyArray<GraderStudentAnswer> = data?.answers ?? [];
+  const answers = useMemo<ReadonlyArray<GraderStudentAnswer>>(
+    () => data?.answers ?? [],
+    [data?.answers]
+  );
   const activeSid = isDemo ? demoSelected?.sid : sid;
 
   const [dirtySids, setDirtySids] = useState<Set<string>>(new Set());
@@ -65,6 +68,7 @@ export const GraderQuestionPage: React.FC = () => {
     if (sid || !data) return;
     const selectLast = (location.state as { selectLast?: boolean } | null)?.selectLast === true;
     let targetSid: string | undefined;
+
     if (selectLast && answers.length) {
       targetSid = answers[answers.length - 1].sid;
     } else if (nav.firstUngraded) {
@@ -98,18 +102,22 @@ export const GraderQuestionPage: React.FC = () => {
   }, []);
 
   const answersRef = useRef(answers);
+
   useEffect(() => {
     answersRef.current = answers;
   }, [answers]);
   const navRef = useRef(nav);
+
   useEffect(() => {
     navRef.current = nav;
   }, [nav]);
   const prefsRef = useRef(prefs);
+
   useEffect(() => {
     prefsRef.current = prefs;
   }, [prefs]);
   const questionNameRef = useRef<string>(data?.question.name ?? "");
+
   useEffect(() => {
     questionNameRef.current = data?.question.name ?? "";
   }, [data?.question.name]);
@@ -213,11 +221,13 @@ export const GraderQuestionPage: React.FC = () => {
   useEffect(() => {
     if (!student?.sid) return;
     const id = student.sid;
+
     if (autoSave.status === "dirty" || autoSave.status === "saving") {
       cancelPendingAdvance();
       setDirtySids((prev) => {
         if (prev.has(id)) return prev;
         const next = new Set(prev);
+
         next.add(id);
         return next;
       });
@@ -225,11 +235,12 @@ export const GraderQuestionPage: React.FC = () => {
       setDirtySids((prev) => {
         if (!prev.has(id)) return prev;
         const next = new Set(prev);
+
         next.delete(id);
         return next;
       });
     }
-  }, [autoSave.status, student?.sid]);
+  }, [autoSave.status, cancelPendingAdvance, student?.sid]);
 
   const [help, setHelp] = useState(false);
   const [hideGraded, setHideGraded] = useState(false);
@@ -264,6 +275,7 @@ export const GraderQuestionPage: React.FC = () => {
     await autoSave.flush();
     if (isDemo) {
       const row = answers.find((a) => a.sid === nextSid);
+
       setDemoSelected(row ?? null);
     } else {
       navigate(`/grader/${aid}/questions/${qid}/students/${encodeURIComponent(nextSid)}`);

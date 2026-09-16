@@ -26,11 +26,14 @@ export const findGradableQuestion = async (
 ): Promise<GradableQuestion> => {
   for (const assignmentId of SEEDED_ASSIGNMENT_IDS) {
     const res = await request.get(graderQuestionsApi(assignmentId));
+
     if (!res.ok()) continue;
     const body = (await res.json()) as { detail?: GraderQuestionsDetail };
     const detail = body.detail;
+
     if (!detail?.questions?.length) continue;
     const hit = detail.questions.find((q) => q.answered_count >= minStudents);
+
     if (hit) {
       return {
         assignmentId,
@@ -54,8 +57,10 @@ export const trackInstructorWrites = (page: Page): string[] => {
 
   page.on("request", (request) => {
     const method = request.method();
+
     if (method !== "POST" && method !== "PUT" && method !== "DELETE") return;
     const url = request.url();
+
     if (!url.includes("/assignment/instructor/")) return;
     if (method === "POST" && READ_MODELED_POSTS.some((fragment) => url.includes(fragment))) return;
     writes.push(`${method} ${url}`);
@@ -76,6 +81,7 @@ export const gotoSplitView = async (
 
 export const activeStudentSid = (page: Page): string => {
   const match = page.url().match(/\/students\/([^/?#]+)/);
+
   if (!match) throw new Error(`No student sid in URL: ${page.url()}`);
   return decodeURIComponent(match[1]);
 };

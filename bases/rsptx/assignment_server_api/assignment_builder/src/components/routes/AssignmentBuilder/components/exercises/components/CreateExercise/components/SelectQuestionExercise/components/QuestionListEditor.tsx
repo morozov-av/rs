@@ -65,12 +65,13 @@ export const QuestionListEditor: FC<QuestionListEditorProps> = ({
     const availableExercises = exercises.filter(
       (ex) => ex.name && !existingQuestionIds.includes(ex.name)
     );
+
     setSuggestions(createSuggestions(availableExercises));
   }, [exercises, existingQuestionIds, createSuggestions]);
 
   useEffect(() => {
     toggleBaseCourse(dataLimitBasecourse);
-  }, [dataLimitBasecourse]);
+  }, [dataLimitBasecourse, toggleBaseCourse]);
 
   useEffect(() => {
     updateSuggestions();

@@ -4,6 +4,7 @@ import { APP_BASE } from "../playwright.config";
 
 export const appPath = (path: string): string => {
   const suffix = path.startsWith("/") ? path : `/${path}`;
+
   return `${APP_BASE}${suffix}`;
 };
 

@@ -1,8 +1,8 @@
+import { Exercise } from "@/types/exercises";
+import { TreeNode } from "@/types/treeNode";
 import { configureStore } from "@reduxjs/toolkit";
 import { assignmentActions } from "@store/assignment/assignment.logic";
 
-import { Exercise } from "@/types/exercises";
-import { TreeNode } from "@/types/treeNode";
 import {
   exercisesActions,
   exercisesSelectors,
@@ -117,6 +117,7 @@ describe("exercisesSlice reducer", () => {
       store.dispatch(exercisesActions.setAvailableExercises([node]));
 
       const result = store.getState().exercises.availableExercises;
+
       expect(result).toHaveLength(1);
       expect(result[0].key).toBe("ch1");
     });
@@ -129,6 +130,7 @@ describe("exercisesSlice reducer", () => {
       store.dispatch(exercisesActions.setAvailableExercises([pageNode, regularNode]));
 
       const result = store.getState().exercises.availableExercises;
+
       expect(result).toHaveLength(1);
       expect(result[0].key).toBe("q-1");
     });
@@ -155,6 +157,7 @@ describe("exercisesSlice reducer", () => {
       store.dispatch(exercisesActions.setAvailableExercises([parent]));
 
       const result = store.getState().exercises.availableExercises;
+
       expect(result[0].disabled).toBe(true);
     });
 
@@ -171,6 +174,7 @@ describe("exercisesSlice reducer", () => {
       store.dispatch(exercisesActions.setAvailableExercises([parent]));
 
       const result = store.getState().exercises.availableExercises;
+
       expect(result[0].disabled).toBe(false);
     });
 
@@ -199,7 +203,11 @@ describe("exercisesSelectors", () => {
   it("getSelectedExercises returns the current selectedExercises array", () => {
     const exercises = [makeExercise()];
     const store = makeStore({
-      exercises: { selectedExercises: exercises, availableExercises: [], selectionAssignmentId: null }
+      exercises: {
+        selectedExercises: exercises,
+        availableExercises: [],
+        selectionAssignmentId: null
+      }
     });
     const state = store.getState() as any;
 

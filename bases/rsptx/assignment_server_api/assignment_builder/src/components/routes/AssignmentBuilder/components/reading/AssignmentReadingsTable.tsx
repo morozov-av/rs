@@ -3,17 +3,16 @@ import { EditableColumn, EditableDataTable } from "@components/ui/EditableTable/
 import { TableSelectionOverlay } from "@components/ui/EditableTable/TableOverlay";
 import { Icon } from "@components/ui/Icon";
 import { useReorderAssignmentExercisesMutation } from "@store/assignmentExercise/assignmentExercise.logic.api";
-import { RefCallback, useMemo, useState } from "react";
+import { RefCallback, useCallback, useMemo, useState } from "react";
 
 import { Nullable } from "@/types/common";
 import { DraggingExerciseColumns } from "@/types/components/editableTableCell";
 import { Exercise } from "@/types/exercises";
 
+import styles from "./AssignmentReadingsTable.module.css";
 import { ActivitiesRequiredCell } from "./components/ActivitiesRequiredCell";
 import { EditInputValueHeaderReadings } from "./components/EditAllReadings/EditInputValueHeaderReadings";
 import { MouseUpHandler } from "./types";
-
-import styles from "./AssignmentReadingsTable.module.css";
 
 interface AssignmentReadingsTableProps {
   assignmentReadings: Exercise[];
@@ -61,9 +60,12 @@ export const AssignmentReadingsTable = ({
   const [reorderReadings] = useReorderAssignmentExercisesMutation();
   const [containerEl, setContainerEl] = useState<HTMLElement | null>(null);
 
-  const handleActivitiesRequiredUpdate = (itemId: number, fieldName: string, value: number) => {
-    handleChange(itemId, fieldName as DraggingExerciseColumns, value);
-  };
+  const handleActivitiesRequiredUpdate = useCallback(
+    (itemId: number, fieldName: string, value: number) => {
+      handleChange(itemId, fieldName as DraggingExerciseColumns, value);
+    },
+    [handleChange]
+  );
 
   const filteredReadings = useMemo(
     () => assignmentReadings.filter((reading) => matchesFilter(reading, globalFilter)),
@@ -140,7 +142,7 @@ export const AssignmentReadingsTable = ({
         )
       }
     ],
-    [handleMouseDown, handleChange, startItemId]
+    [handleMouseDown, handleChange, startItemId, handleActivitiesRequiredUpdate]
   );
 
   return (

@@ -1,10 +1,12 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { renderHook, act } from "@testing-library/react";
 import React from "react";
 import { Provider } from "react-redux";
 
+import { renderHook, act } from "@testing-library/react";
+
+import { configureStore } from "@reduxjs/toolkit";
 import { assignmentSlice, assignmentActions } from "@store/assignment/assignment.logic";
 import { assignmentApi } from "@store/assignment/assignment.logic.api";
+
 import { useSelectedAssignment } from "./useSelectedAssignment";
 
 vi.mock("@store/assignment/assignment.logic.api", () => ({
@@ -55,6 +57,7 @@ describe("useSelectedAssignment", () => {
   describe("selectedAssignment", () => {
     it("returns undefined when no assignment ID is selected", () => {
       const store = makeStore(null);
+
       vi.mocked(useGetAssignmentQuery).mockReturnValue({ data: undefined } as any);
 
       const { result } = renderHook(() => useSelectedAssignment(), {
@@ -74,6 +77,7 @@ describe("useSelectedAssignment", () => {
       } as any;
 
       const store = makeStore(42);
+
       vi.mocked(useGetAssignmentQuery).mockReturnValue({ data: mockAssignment } as any);
 
       const { result } = renderHook(() => useSelectedAssignment(), {
@@ -124,6 +128,7 @@ describe("useSelectedAssignment", () => {
     it("does not call putAssignment immediately when updateAssignment is called", () => {
       const store = makeStore(1);
       const mockAssignment = { id: 1, name: "Original" } as any;
+
       vi.mocked(useGetAssignmentQuery).mockReturnValue({ data: mockAssignment } as any);
 
       const { result } = renderHook(() => useSelectedAssignment(), {
@@ -142,6 +147,7 @@ describe("useSelectedAssignment", () => {
 
       const store = makeStore(1);
       const mockAssignment = { id: 1, name: "Original", points: 5 } as any;
+
       vi.mocked(useGetAssignmentQuery).mockReturnValue({ data: mockAssignment } as any);
 
       const { result } = renderHook(() => useSelectedAssignment(), {
@@ -173,6 +179,7 @@ describe("useSelectedAssignment", () => {
 
       const store = makeStore(1);
       const mockAssignment = { id: 1, name: "Original", points: 5 } as any;
+
       vi.mocked(useGetAssignmentQuery).mockReturnValue({ data: mockAssignment } as any);
 
       const { result } = renderHook(() => useSelectedAssignment(), {
@@ -213,6 +220,7 @@ describe("useSelectedAssignment", () => {
       vi.useFakeTimers();
 
       const store = makeStore(null);
+
       vi.mocked(useGetAssignmentQuery).mockReturnValue({ data: undefined } as any);
 
       const { result } = renderHook(() => useSelectedAssignment(), {
@@ -236,6 +244,7 @@ describe("useSelectedAssignment", () => {
       vi.useFakeTimers();
 
       const store = makeStore(1);
+
       vi.mocked(useGetAssignmentQuery).mockReturnValue({ data: undefined } as any);
 
       const { result } = renderHook(() => useSelectedAssignment(), {

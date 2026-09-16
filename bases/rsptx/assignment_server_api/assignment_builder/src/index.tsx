@@ -1,5 +1,6 @@
 import "@fontsource-variable/inter";
 import "@fontsource-variable/jetbrains-mono";
+
 import interWoff2 from "@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.layer.css";
@@ -14,8 +15,8 @@ import "./styles/tokens.css";
 import "./styles/typography.css";
 import "./styles/global.css";
 import { createRoot } from "react-dom/client";
-import "./index.css";
 import { Provider } from "react-redux";
+import "./index.css";
 
 import { store } from "@/state/store";
 

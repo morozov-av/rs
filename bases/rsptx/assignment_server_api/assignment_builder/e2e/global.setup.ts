@@ -4,8 +4,8 @@ import { APP_URL, AUTH_FILE, BACKEND_URL } from "./playwright.config";
 
 const STACK_DOWN_MESSAGE = (url: string) =>
   `Dev stack is down: ${url} is unreachable. ` +
-  `(docker compose up -d at the repo root for the backend on :80, npm start in ` +
-  `assignment_builder for the Vite dev server on :5173).`;
+  "(docker compose up -d at the repo root for the backend on :80, npm start in " +
+  "assignment_builder for the Vite dev server on :5173).";
 
 const LOGIN_URL = `${BACKEND_URL}/runestone/default/user/login`;
 const E2E_USER = "testuser1";

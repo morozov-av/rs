@@ -1,9 +1,9 @@
 import { MathJaxWrapper } from "@components/routes/AssignmentBuilder/MathJaxWrapper";
+import { GraderAnswerHistoryItem } from "@store/grader/grader.logic.api";
 import { MathJax } from "better-react-mathjax";
 import React, { useEffect, useReducer, useRef } from "react";
 
 import { renderRunestoneComponent } from "@/componentFuncs";
-import { GraderAnswerHistoryItem } from "@store/grader/grader.logic.api";
 
 import styles from "./AnswerViews.module.css";
 
@@ -18,6 +18,9 @@ interface Props {
 
   deadline?: string;
 }
+
+const wait = (milliseconds: number): Promise<void> =>
+  new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 
 export const RunestoneGraderPreview: React.FC<Props> = ({
   htmlsrc,
@@ -35,6 +38,7 @@ export const RunestoneGraderPreview: React.FC<Props> = ({
     try {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const cfg = (window as any).eBookConfig || {};
+
       if (cfg.email && cfg.course) {
         localStorage.removeItem(`${cfg.email}:${cfg.course}:${divId}-given`);
       }
@@ -53,6 +57,7 @@ export const RunestoneGraderPreview: React.FC<Props> = ({
       useRunestoneServices: true,
       gradingContainer: ref.current.id || undefined
     };
+
     if (deadline) {
       opts.deadline = deadline;
       opts.enforceDeadline = true;
@@ -61,6 +66,7 @@ export const RunestoneGraderPreview: React.FC<Props> = ({
     }
 
     let cancelled = false;
+
     renderRunestoneComponent(ref, opts)
       .then(async () => {
         if (cancelled) return;
@@ -71,6 +77,7 @@ export const RunestoneGraderPreview: React.FC<Props> = ({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const componentMap = (window as any).componentMap || {};
         const inst = componentMap[cmKey] || componentMap[divId];
+
         if (!inst) return;
         try {
           if (typeof inst.checkServerComplete?.then === "function") {
@@ -79,7 +86,7 @@ export const RunestoneGraderPreview: React.FC<Props> = ({
 
           if (inst.addingScrubber) {
             for (let i = 0; i < 50 && inst.addingScrubber; i++) {
-              await new Promise((r) => setTimeout(r, 20));
+              await wait(20);
             }
           }
           if (cancelled) return;
@@ -119,6 +126,7 @@ export const RunestoneGraderPreview: React.FC<Props> = ({
                 const idx = inst.history.findIndex((h: string) => h === codeString);
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const $ = (window as any).$;
+
                 if (idx >= 0 && $ && inst.scrubber) {
                   $(inst.scrubber).slider("value", idx);
                   if (typeof inst.slideit === "function") {
@@ -155,7 +163,7 @@ export const RunestoneGraderPreview: React.FC<Props> = ({
     return () => {
       cancelled = true;
     };
-  }, [htmlsrc, sid, divId, attempt?.id]);
+  }, [htmlsrc, sid, divId, attempt, deadline]);
 
   if (!htmlsrc) {
     return <div className={styles.emptyPreview}>No rendered question preview available.</div>;

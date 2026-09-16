@@ -1,11 +1,13 @@
-import { renderHook, act } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
 import React from "react";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+
+import { renderHook, act } from "@testing-library/react";
 
 const mockNavigate = vi.fn();
 
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual<typeof import("react-router-dom")>("react-router-dom");
+
   return {
     ...actual,
     useNavigate: () => mockNavigate
@@ -59,6 +61,7 @@ const wrapEdit = (path: string) => {
     EDIT_ROUTES.find((r) => {
       const segments = r.split("/");
       const pathSegments = path.split("/");
+
       if (segments.length !== pathSegments.length) return false;
       return segments.every((s, i) => s.startsWith(":") || s === pathSegments[i]);
     }) ?? "*";
@@ -85,23 +88,27 @@ describe("useAssignmentRouting", () => {
   describe("routeState derivation from path", () => {
     it("sets mode to list when path is /builder", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder"));
+
       expect(result.current.mode).toBe("list");
       expect(result.current.selectedAssignmentId).toBeNull();
     });
 
     it("sets mode to list when path is /builder/", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/"));
+
       expect(result.current.mode).toBe("list");
     });
 
     it("sets mode to create and wizardStep to basic for /builder/create", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create"));
+
       expect(result.current.mode).toBe("create");
       expect(result.current.wizardStep).toBe("basic");
     });
 
     it("sets wizardStep to type for /builder/create/type", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create/type"));
+
       expect(result.current.mode).toBe("create");
       expect(result.current.wizardStep).toBe("type");
     });
@@ -111,12 +118,14 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrap("/builder/create/visibility")
       );
+
       expect(result.current.mode).toBe("create");
       expect(result.current.wizardStep).toBe("visibility");
     });
 
     it("sets mode to edit and captures assignmentId for /builder/:id", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrapEdit("/builder/42"));
+
       expect(result.current.mode).toBe("edit");
       expect(result.current.selectedAssignmentId).toBe("42");
       expect(result.current.activeTab).toBe("basic");
@@ -124,6 +133,7 @@ describe("useAssignmentRouting", () => {
 
     it("sets activeTab to readings for /builder/:id/readings", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrapEdit("/builder/42/readings"));
+
       expect(result.current.mode).toBe("edit");
       expect(result.current.activeTab).toBe("readings");
     });
@@ -133,6 +143,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       expect(result.current.activeTab).toBe("exercises");
       expect(result.current.exerciseViewMode).toBe("list");
     });
@@ -142,6 +153,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/browse")
       );
+
       expect(result.current.exerciseViewMode).toBe("browse");
     });
 
@@ -150,6 +162,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/search")
       );
+
       expect(result.current.exerciseViewMode).toBe("search");
     });
 
@@ -158,6 +171,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/create/mchoice")
       );
+
       expect(result.current.exerciseViewMode).toBe("create");
       expect(result.current.exerciseType).toBe("mchoice");
       expect(result.current.exerciseSubType).toBeNull();
@@ -169,6 +183,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/create/mchoice/advanced")
       );
+
       expect(result.current.exerciseType).toBe("mchoice");
       expect(result.current.exerciseSubType).toBe("advanced");
     });
@@ -178,6 +193,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/create/mchoice/advanced/2")
       );
+
       expect(result.current.exerciseStep).toBe(2);
     });
 
@@ -186,6 +202,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/edit/99")
       );
+
       expect(result.current.exerciseViewMode).toBe("edit");
       expect(result.current.exerciseId).toBe("99");
       expect(result.current.exerciseStep).toBe(0);
@@ -196,11 +213,13 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/edit/99/3")
       );
+
       expect(result.current.exerciseStep).toBe(3);
     });
 
     it("returns default state for unrecognized path", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/unknown"));
+
       expect(result.current.mode).toBe("list");
       expect(result.current.wizardStep).toBe("basic");
       expect(result.current.activeTab).toBe("basic");
@@ -215,6 +234,7 @@ describe("useAssignmentRouting", () => {
   describe("navigateToList", () => {
     it("calls navigate with /builder", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder"));
+
       act(() => result.current.navigateToList());
       expect(mockNavigate).toHaveBeenCalledWith("/builder");
     });
@@ -223,24 +243,28 @@ describe("useAssignmentRouting", () => {
   describe("navigateToCreate", () => {
     it("calls navigate with /builder/create when no step given", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create"));
+
       act(() => result.current.navigateToCreate());
       expect(mockNavigate).toHaveBeenCalledWith("/builder/create");
     });
 
     it("calls navigate with /builder/create/type for step=type", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create"));
+
       act(() => result.current.navigateToCreate("type"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/create/type");
     });
 
     it("calls navigate with /builder/create/visibility for step=visibility", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create"));
+
       act(() => result.current.navigateToCreate("visibility"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/create/visibility");
     });
 
     it("calls navigate with /builder/create for step=basic", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create"));
+
       act(() => result.current.navigateToCreate("basic"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/create");
     });
@@ -249,24 +273,28 @@ describe("useAssignmentRouting", () => {
   describe("navigateToEdit", () => {
     it("navigates to /builder/:id for tab=basic", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrapEdit("/builder/42"));
+
       act(() => result.current.navigateToEdit("42", "basic"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42");
     });
 
     it("navigates to /builder/:id/readings for tab=readings", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrapEdit("/builder/42"));
+
       act(() => result.current.navigateToEdit("42", "readings"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/readings");
     });
 
     it("navigates to /builder/:id/exercises for tab=exercises", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrapEdit("/builder/42"));
+
       act(() => result.current.navigateToEdit("42", "exercises"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises");
     });
 
     it("defaults tab to basic when omitted", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrapEdit("/builder/42"));
+
       act(() => result.current.navigateToEdit("42"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42");
     });
@@ -278,6 +306,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42", "list"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises");
     });
@@ -287,6 +316,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises");
     });
@@ -296,6 +326,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42", "browse"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/browse");
     });
@@ -305,6 +336,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42", "search"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/search");
     });
@@ -314,6 +346,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42", "create", { exerciseType: "mchoice" }));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/create/mchoice");
     });
@@ -323,6 +356,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() =>
         result.current.navigateToExercises("42", "create", {
           exerciseType: "mchoice",
@@ -337,6 +371,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() =>
         result.current.navigateToExercises("42", "create", {
           exerciseType: "mchoice",
@@ -352,6 +387,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42", "create"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/create");
     });
@@ -361,6 +397,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42", "edit", { exerciseId: "99" }));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/edit/99");
     });
@@ -370,6 +407,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42", "edit", { exerciseId: "99", step: 3 }));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/edit/99/3");
     });
@@ -379,6 +417,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExercises("42", "edit"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/edit");
     });
@@ -390,6 +429,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExerciseTypeSelection("42", "mchoice"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/create/mchoice");
     });
@@ -401,6 +441,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.navigateToExerciseSubTypeSelection("42", "mchoice", "advanced"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/create/mchoice/advanced");
     });
@@ -409,18 +450,21 @@ describe("useAssignmentRouting", () => {
   describe("updateWizardStep", () => {
     it("navigates to /builder/create/type", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create"));
+
       act(() => result.current.updateWizardStep("type"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/create/type");
     });
 
     it("navigates to /builder/create/visibility", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create"));
+
       act(() => result.current.updateWizardStep("visibility"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/create/visibility");
     });
 
     it("navigates to /builder/create for basic step", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder/create"));
+
       act(() => result.current.updateWizardStep("basic"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/create");
     });
@@ -429,18 +473,21 @@ describe("useAssignmentRouting", () => {
   describe("updateEditTab", () => {
     it("does not navigate when no selectedAssignmentId", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder"));
+
       act(() => result.current.updateEditTab("readings"));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
 
     it("navigates to exercises tab", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrapEdit("/builder/42/readings"));
+
       act(() => result.current.updateEditTab("exercises"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises");
     });
 
     it("navigates to base path when tab is basic", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrapEdit("/builder/42/readings"));
+
       act(() => result.current.updateEditTab("basic"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42");
     });
@@ -449,6 +496,7 @@ describe("useAssignmentRouting", () => {
   describe("updateExerciseViewMode", () => {
     it("does not navigate when no selectedAssignmentId", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder"));
+
       act(() => result.current.updateExerciseViewMode("browse"));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -458,6 +506,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.updateExerciseViewMode("browse"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/browse");
     });
@@ -467,6 +516,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.updateExerciseViewMode("create", { exerciseType: "mchoice" }));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/create/mchoice");
     });
@@ -475,6 +525,7 @@ describe("useAssignmentRouting", () => {
   describe("updateExerciseType", () => {
     it("does not navigate when no selectedAssignmentId", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder"));
+
       act(() => result.current.updateExerciseType("mchoice"));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -484,6 +535,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.updateExerciseType("mchoice"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/create/mchoice");
     });
@@ -492,6 +544,7 @@ describe("useAssignmentRouting", () => {
   describe("updateExerciseSubType", () => {
     it("does not navigate when no selectedAssignmentId", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder"));
+
       act(() => result.current.updateExerciseSubType("advanced"));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -501,6 +554,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.updateExerciseSubType("advanced"));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -510,6 +564,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/create/mchoice")
       );
+
       act(() => result.current.updateExerciseSubType("advanced"));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/create/mchoice/advanced");
     });
@@ -518,6 +573,7 @@ describe("useAssignmentRouting", () => {
   describe("updateExerciseStep", () => {
     it("does not navigate when no selectedAssignmentId", () => {
       const { result } = renderHook(() => useAssignmentRouting(), wrap("/builder"));
+
       act(() => result.current.updateExerciseStep(1));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -527,6 +583,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises")
       );
+
       act(() => result.current.updateExerciseStep(1));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -536,6 +593,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/create")
       );
+
       act(() => result.current.updateExerciseStep(1));
       expect(mockNavigate).not.toHaveBeenCalled();
     });
@@ -545,6 +603,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/create/mchoice/advanced/0")
       );
+
       act(() => result.current.updateExerciseStep(2));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/create/mchoice/advanced/2");
     });
@@ -554,6 +613,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/edit/99/0")
       );
+
       act(() => result.current.updateExerciseStep(3));
       expect(mockNavigate).toHaveBeenCalledWith("/builder/42/exercises/edit/99/3");
     });
@@ -563,6 +623,7 @@ describe("useAssignmentRouting", () => {
         () => useAssignmentRouting(),
         wrapEdit("/builder/42/exercises/edit")
       );
+
       act(() => result.current.updateExerciseStep(1));
       expect(mockNavigate).not.toHaveBeenCalled();
     });

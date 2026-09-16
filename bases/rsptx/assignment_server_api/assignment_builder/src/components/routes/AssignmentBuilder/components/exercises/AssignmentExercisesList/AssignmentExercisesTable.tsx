@@ -13,11 +13,10 @@ import {
   useReorderAssignmentExercisesMutation,
   useUpdateAssignmentQuestionsMutation
 } from "@store/assignmentExercise/assignmentExercise.logic.api";
-import { RefCallback, useMemo, useState } from "react";
-
-import { useExercisesSelector } from "@/hooks/useExercisesSelector";
+import { RefCallback, useCallback, useMemo, useState } from "react";
 
 import { difficultyOptions } from "@/config/exerciseTypes";
+import { useExercisesSelector } from "@/hooks/useExercisesSelector";
 import { useJwtUser } from "@/hooks/useJwtUser";
 import { useSelectedAssignment } from "@/hooks/useSelectedAssignment";
 import { DraggingExerciseColumns } from "@/types/components/editableTableCell";
@@ -29,9 +28,8 @@ import { EditDropdownValueHeader } from "../components/EditAllExercises/EditDrop
 import { EditInputValueHeader } from "../components/EditAllExercises/EditInputValueHeader";
 import { ExercisePreviewModal } from "../components/ExercisePreview/ExercisePreviewModal";
 
-import { SetCurrentEditExercise, ViewModeSetter, MouseUpHandler } from "./types";
-
 import styles from "./AssignmentExercisesTable.module.css";
+import { SetCurrentEditExercise, ViewModeSetter, MouseUpHandler } from "./types";
 
 const ASYNC_MODE_OPTIONS = (hasApiKey: boolean) => [
   { value: "Standard", label: "Standard" },
@@ -189,7 +187,10 @@ export const AssignmentExercisesTable = ({
   const [copyModalVisible, setCopyModalVisible] = useState(false);
   const [selectedExerciseForCopy, setSelectedExerciseForCopy] = useState<Exercise | null>(null);
 
-  const getIsEditable = (exercise: Exercise) => isExerciseEditable(exercise, username);
+  const getIsEditable = useCallback(
+    (exercise: Exercise) => isExerciseEditable(exercise, username),
+    [username]
+  );
 
   const handleCopyClick = (exercise: Exercise) => {
     setSelectedExerciseForCopy(exercise);
@@ -418,7 +419,17 @@ export const AssignmentExercisesTable = ({
     }
 
     return baseColumns;
-  }, [handleMouseDown, handleChange, startItemId, showAsyncColumn, hasApiKey, username]);
+  }, [
+    handleMouseDown,
+    handleChange,
+    startItemId,
+    showAsyncColumn,
+    hasApiKey,
+    getIsEditable,
+    setCurrentEditExercise,
+    setViewMode,
+    updateAssignmentQuestions
+  ]);
 
   return (
     <>

@@ -1,7 +1,10 @@
-import { renderHook, act } from "@testing-library/react";
-import { useAssignmentState } from "./useAssignmentState";
-import { Assignment, KindOfAssignment } from "@/types/assignment";
 import { UseFormSetValue } from "react-hook-form";
+
+import { renderHook, act } from "@testing-library/react";
+
+import { Assignment, KindOfAssignment } from "@/types/assignment";
+
+import { useAssignmentState } from "./useAssignmentState";
 
 const makeSetValue = (): jest.Mock => vi.fn() as unknown as jest.Mock;
 
@@ -9,11 +12,13 @@ describe("useAssignmentState", () => {
   describe("initial state", () => {
     it("returns empty string as default globalFilter", () => {
       const { result } = renderHook(() => useAssignmentState());
+
       expect(result.current.globalFilter).toBe("");
     });
 
     it("returns false as default isCollapsed", () => {
       const { result } = renderHook(() => useAssignmentState());
+
       expect(result.current.isCollapsed).toBe(false);
     });
   });
@@ -21,6 +26,7 @@ describe("useAssignmentState", () => {
   describe("setGlobalFilter", () => {
     it("updates globalFilter when called with a new value", () => {
       const { result } = renderHook(() => useAssignmentState());
+
       act(() => {
         result.current.setGlobalFilter("search term");
       });
@@ -29,6 +35,7 @@ describe("useAssignmentState", () => {
 
     it("clears globalFilter when called with empty string", () => {
       const { result } = renderHook(() => useAssignmentState());
+
       act(() => {
         result.current.setGlobalFilter("something");
       });
@@ -42,6 +49,7 @@ describe("useAssignmentState", () => {
   describe("setIsCollapsed", () => {
     it("updates isCollapsed to true", () => {
       const { result } = renderHook(() => useAssignmentState());
+
       act(() => {
         result.current.setIsCollapsed(true);
       });
@@ -50,6 +58,7 @@ describe("useAssignmentState", () => {
 
     it("toggles isCollapsed back to false", () => {
       const { result } = renderHook(() => useAssignmentState());
+
       act(() => {
         result.current.setIsCollapsed(true);
       });
@@ -137,6 +146,7 @@ describe("useAssignmentState", () => {
         const nopauseCalls = (setValue as unknown as ReturnType<typeof vi.fn>).mock.calls.filter(
           ([field]: [string]) => field === "nopause"
         );
+
         expect(nopauseCalls.at(-1)).toEqual(["nopause", false]);
       });
 
@@ -154,6 +164,7 @@ describe("useAssignmentState", () => {
         const nofeedbackCalls = (setValue as unknown as ReturnType<typeof vi.fn>).mock.calls.filter(
           ([field]: [string]) => field === "nofeedback"
         );
+
         expect(nofeedbackCalls.at(-1)).toEqual(["nofeedback", false]);
       });
 
@@ -171,6 +182,7 @@ describe("useAssignmentState", () => {
         const isPeerTrueCalls = (setValue as unknown as ReturnType<typeof vi.fn>).mock.calls.filter(
           ([field, value]: [string, unknown]) => field === "is_peer" && value === true
         );
+
         expect(isPeerTrueCalls).toHaveLength(0);
       });
 
@@ -218,6 +230,7 @@ describe("useAssignmentState", () => {
         const peerAsyncCalls = (setValue as unknown as ReturnType<typeof vi.fn>).mock.calls.filter(
           ([field]: [string]) => field === "peer_async_visible"
         );
+
         expect(peerAsyncCalls.at(-1)).toEqual(["peer_async_visible", false]);
       });
 
@@ -237,6 +250,7 @@ describe("useAssignmentState", () => {
         ).mock.calls.filter(
           ([field, value]: [string, unknown]) => field === "is_timed" && value === true
         );
+
         expect(isTimedTrueCalls).toHaveLength(0);
       });
 
@@ -256,6 +270,7 @@ describe("useAssignmentState", () => {
         ).mock.calls.filter(
           ([field, value]: [string, unknown]) => field === "time_limit" && value !== null
         );
+
         expect(timeLimitNonNullCalls).toHaveLength(0);
       });
 
@@ -291,6 +306,7 @@ describe("useAssignmentState", () => {
         ).mock.calls.filter(
           ([field, value]: [string, unknown]) => field === "is_timed" && value === true
         );
+
         expect(isTimedTrueCalls).toHaveLength(0);
       });
 
@@ -308,6 +324,7 @@ describe("useAssignmentState", () => {
         const isPeerTrueCalls = (setValue as unknown as ReturnType<typeof vi.fn>).mock.calls.filter(
           ([field, value]: [string, unknown]) => field === "is_peer" && value === true
         );
+
         expect(isPeerTrueCalls).toHaveLength(0);
       });
 
@@ -344,6 +361,7 @@ describe("useAssignmentState", () => {
       const isTimedResets = allCalls.filter(
         ([field, value]: [string, unknown]) => field === "is_timed" && value === false
       );
+
       expect(isTimedResets.length).toBeGreaterThanOrEqual(2);
     });
   });
@@ -351,6 +369,7 @@ describe("useAssignmentState", () => {
   describe("return shape", () => {
     it("exposes all expected keys", () => {
       const { result } = renderHook(() => useAssignmentState());
+
       expect(result.current).toHaveProperty("globalFilter");
       expect(result.current).toHaveProperty("setGlobalFilter");
       expect(result.current).toHaveProperty("isCollapsed");
